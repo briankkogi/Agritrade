@@ -29,12 +29,19 @@ firebase_admin.initialize_app(cred)
 # Initialize Firestore
 db = firestore.client()
 
-# Redirect the root route to the login page
+# Redirect the root route to the welcome page
 @app.route('/')
 def index():
     if 'user' in session:
-        return redirect(url_for('home'))
-    return redirect(url_for('login'))
+        return redirect(url_for('home'))  # Redirect to home if logged in
+    return redirect(url_for('welcome'))  # Redirect to the welcome page for unauthenticated users
+
+
+@app.route('/welcome')
+def welcome():
+    if 'user' in session:
+        return redirect(url_for('home'))  # Redirect to home if already logged in
+    return render_template('welcome.html')  # Render the welcome page
 
 # Route for the login page
 @app.route('/login', methods=['GET', 'POST'])
@@ -55,18 +62,17 @@ def login():
 
     return render_template('login.html')
 
-# Route for the signup page
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        username = request.form['username']  # New username field
+        username = request.form['username']
 
         # Firebase user sign-up
         try:
             user = auth.create_user(email=email, password=password)
-            logging.debug(f"User signed up: {user.email}")
+            logging.debug(f"User signed up: {user.email}, UID: {user.uid}")
 
             # Store user info in Firestore
             db.collection('users').document(user.uid).set({
@@ -74,12 +80,15 @@ def signup():
                 'username': username,  # Store the username provided during signup
                 'createdAt': firestore.SERVER_TIMESTAMP
             })
+            logging.debug(f"User data saved to Firestore for UID: {user.uid}")
+
             return redirect(url_for('login'))
         except Exception as e:
             logging.error(f"Signup failed for {email}: {e}")
             return render_template('signup.html', error="Signup failed. Please try again.")
 
     return render_template('signup.html')
+
 
 # Verify the JWT token received from the Firebase client
 @app.route('/verify_token', methods=['POST'])
@@ -220,6 +229,8 @@ def predict():
     except Exception as e:
         logging.error(f"Error in prediction: {e}")
         return str(e)
+    
+
 
 # Flask app entry point
 if __name__ == '__main__':
