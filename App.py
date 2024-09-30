@@ -221,46 +221,6 @@ def predict():
         logging.error(f"Error in prediction: {e}")
         return str(e)
 
-# Route for the account page where users can edit their account details
-@app.route('/account', methods=['GET', 'POST'])
-def account():
-    if 'user' not in session:
-        logging.debug("User not in session, redirecting to login")
-        return redirect(url_for('login'))
-
-    user_email = session['user']
-    try:
-        user = auth.get_user_by_email(user_email)  # Correct method to fetch by email
-        user_doc_ref = db.collection('users').document(user.uid).get()
-        username = user_doc_ref.to_dict().get('username', '') if user_doc_ref.exists else ''
-    except Exception as e:
-        logging.error(f"Error fetching user account: {e}")
-        return render_template('account.html', error="Could not fetch user details.")
-
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        username = request.form['username']  # Username field
-
-        try:
-            # Update user email and password in Firebase
-            auth.update_user(user.uid, email=email, password=password)
-            session['user'] = email  # Update the session with the new email
-
-            # Update Firestore with the new username
-            user_doc_ref.set({
-                'username': username
-            }, merge=True)
-
-            logging.debug(f"User account updated: {email}")
-            return redirect(url_for('home'))
-
-        except Exception as e:
-            logging.error(f"Account update failed for {email}: {e}")
-            return render_template('account.html', error="Account update failed. Please try again.", email=email, username=username)
-
-    return render_template('account.html', email=user_email, username=username)
-
 # Flask app entry point
 if __name__ == '__main__':
     app.run(debug=True)
