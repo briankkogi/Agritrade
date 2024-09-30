@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='result.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Crop Prediction Result</h1>
+        <p>Based on the provided weather data, here are the predicted probabilities for each crop:</p>
+        
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Crop</th>
+                        <th>Probability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for crop, probability in crop_probabilities.items() %}
+                    <tr>
+                        <td>{{ crop }}</td>
+                        <td>{{ probability * 100 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="back-link">
+            <a href="/">Go Back</a>
+        </div>
+    </div>
+</body>
+</html>

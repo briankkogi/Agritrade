@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='account.css') }}">
+    <title>Account Details</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Account Details</h1>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form id="account-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{ username }}" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ email }}" required>
+
+            <label for="password">New Password:</label>
+            <input type="password" id="password" name="password" placeholder="Leave blank to keep current password">
+
+            <label for="confirm_password">Confirm New Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Leave blank to keep current password">
+
+            <button type="submit">Update Account</button>
+        </form>
+        <a href="{{ url_for('home') }}">Back to Home</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
+            authDomain: "agritrade-3fe65.firebaseapp.com",
+            projectId: "agritrade-3fe65",
+            storageBucket: "agritrade-3fe65.appspot.com",
+            messagingSenderId: "742671449846",
+            appId: "1:742671449846:web:2bd6f4b4cd0772bee6b6d7",
+            measurementId: "G-5NSK9449FG"
+        };
+        
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        document.getElementById('account-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Get current user
+            const user = auth.currentUser;
+
+            // Update user email and password in Firebase
+            user.updateEmail(email).then(() => {
+                if (password) {
+                    return user.updatePassword(password);
+                }
+            }).then(() => {
+                // Update Firestore with the new username
+                const db = firebase.firestore();
+                return db.collection('users').doc(user.uid).set({
+                    username: username
+                }, { merge: true });
+            }).then(() => {
+                alert('Account updated successfully!');
+                window.location.href = "{{ url_for('home') }}"; // Redirect to home after successful update
+            }).catch((error) => {
+                console.error("Error updating account: ", error);
+                alert("Account update failed: " + error.message);
+            });
+        });
+    </script>
+</body>
+</html>

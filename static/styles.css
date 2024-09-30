@@ -1,0 +1,166 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #333;
+    position: relative;
+}
+
+h1 {
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+nav {
+    background-color: #4CAF50; /* Navigation bar background color */
+    width: 100%; /* Full width */
+    padding: 10px 0; /* Padding for the nav bar */
+    position: absolute; /* Positioning the nav bar */
+    top: 0; /* Aligning it to the top */
+    left: 0; /* Aligning it to the left */
+}
+
+nav ul {
+    list-style-type: none; /* Removing bullet points */
+    display: flex; /* Flexbox for horizontal alignment */
+    justify-content: center; /* Centering nav items */
+    padding: 0; /* Removing default padding */
+}
+
+nav li {
+    margin: 0 15px; /* Margin between nav items */
+}
+
+nav a {
+    color: white; /* Text color */
+    text-decoration: none; /* Removing underline */
+    font-weight: bold; /* Bold text */
+    transition: color 0.3s; /* Transition for hover effect */
+}
+
+nav a:hover {
+    color: #45a049; /* Change color on hover */
+}
+
+#weather-info {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 300px;
+    text-align: left;
+}
+
+/* Forecast widget styling to resemble OpenWeather */
+#forecast-widget {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 320px;
+    position: absolute;
+    top: 80px; /* Adjusted to avoid overlap with nav */
+    left: 20px;
+    text-align: left;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+}
+
+#forecast-widget h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #4CAF50;
+}
+
+.forecast-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background-color 0.3s;
+}
+
+.forecast-button:hover {
+    background-color: #45a049;
+}
+
+.forecast-details {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.forecast-details span {
+    display: block;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Form styling */
+form {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: left;
+}
+
+label {
+    margin-top: 10px;
+    display: block;
+    font-weight: bold;
+}
+
+input[type="number"], input[type="hidden"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Responsive design */
+@media (max-width: 400px) {
+    #weather-info, form {
+        width: 90%;
+    }
+
+    #forecast-widget {
+        width: 90%;
+        top: auto;
+        left: auto;
+        right: 10px;
+        bottom: 10px;
+        position: fixed;
+    }
+}

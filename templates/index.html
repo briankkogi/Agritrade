@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Function to get the user's location using Geolocation API
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Function to handle successful location retrieval
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // Fetch weather data using the retrieved latitude and longitude
+            fetch('/get_weather', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    latitude: latitude,
+                    longitude: longitude
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error fetching weather: ' + data.error);
+                } else {
+                    // Update the weather information displayed on the page
+                    document.getElementById('location').innerHTML = 'Location: ' + data.location;
+                    document.getElementById('temperature').innerHTML = 'Temperature: ' + data.temperature + ' °C';
+                    document.getElementById('humidity').innerHTML = 'Humidity: ' + data.humidity + ' %';
+                    document.getElementById('rainfall').innerHTML = 'Rainfall: ' + data.rainfall + ' mm (last hour)';
+
+                    // Store the weather data in hidden fields for the prediction form
+                    document.getElementById('latitude').value = latitude;
+                    document.getElementById('longitude').value = longitude;
+                    document.getElementById('temperature-input').value = data.temperature;
+                    document.getElementById('humidity-input').value = data.humidity;
+                    document.getElementById('rainfall-input').value = data.rainfall;
+
+                    // Autofill the input fields if they are empty
+                    if (!document.getElementById('user-temperature').value) {
+                        document.getElementById('user-temperature').value = data.temperature;
+                    }
+                    if (!document.getElementById('user-humidity').value) {
+                        document.getElementById('user-humidity').value = data.humidity;
+                    }
+                    if (!document.getElementById('user-rainfall').value) {
+                        document.getElementById('user-rainfall').value = data.rainfall;
+                    }
+                }
+            })
+            .catch(error => {
+                alert('Error fetching weather data: ' + error);
+            });
+        }
+
+        // Function to handle errors when retrieving geolocation
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+
+        // Function to fetch and display the 5-day forecast
+        function fetchForecast() {
+            const latitude = 0;  // Replace with actual latitude
+            const longitude = 0; // Replace with actual longitude
+
+            fetch('/get_forecast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ latitude: latitude, longitude: longitude })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const forecastContainer = document.getElementById('forecast-container');
+                const tempData = [];
+                const labels = [];
+                forecastContainer.innerHTML = '';  // Clear any existing content
+
+                if (data.error) {
+                    forecastContainer.innerHTML = `<p>Error fetching forecast: ${data.error}</p>`;
+                    return;
+                }
+
+                // Loop through forecast data and create HTML for each day
+                data.forecast.forEach(forecast => {
+                    const forecastDay = document.createElement('div');
+                    forecastDay.classList.add('forecast-day');
+                    forecastDay.innerHTML = `
+                        <h3>${forecast.date}</h3>
+                        <p class="forecast-details">
+                            Temperature: ${forecast.temperature} °C<br>
+                            Humidity: ${forecast.humidity}%<br>
+                            Rainfall: ${forecast.rainfall} mm
+                        </p>
+                    `;
+                    forecastContainer.appendChild(forecastDay);
+
+                    // Collect data for the graph
+                    tempData.push(forecast.temperature);
+                    labels.push(forecast.date);
+                });
+
+                // Draw the temperature graph
+                drawTemperatureGraph(labels, tempData);
+            })
+            .catch(error => {
+                console.error('Error fetching forecast:', error);
+            });
+        }
+
+        function drawTemperatureGraph(labels, tempData) {
+            const ctx = document.getElementById('temperature-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: tempData,
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)',
+                            },
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                            },
+                        },
+                    },
+                }
+            });
+        }
+
+        // Automatically get the location and forecast when the page loads
+        window.onload = function() {
+            getLocation();
+            fetchForecast();
+        };
+    </script>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('account') }}">Account</a></li> <!-- Link to Account Page -->
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <h1>Welcome to Crop Prediction</h1>
+
+    <!-- Forecast Widget -->
+    <div id="forecast-widget">
+        <h2>5-Day Forecast</h2>
+        <div id="forecast-container">
+            <!-- Forecast days will be dynamically populated here -->
+        </div>
+        <canvas id="temperature-chart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Weather Information Section -->
+    <div id="weather-info">
+        <p id="location">Location: </p>
+        <p id="temperature">Temperature: </p>
+        <p id="humidity">Humidity: </p>
+        <p id="rainfall">Rainfall: </p>
+    </div>
+
+    <!-- Form for Crop Prediction -->
+    <form method="POST" action="/predict">
+        <!-- Hidden fields to store automatic weather data for prediction -->
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+        <input type="hidden" id="temperature-input" name="temperature">
+        <input type="hidden" id="humidity-input" name="humidity">
+        <input type="hidden" id="rainfall-input" name="rainfall">
+
+        <h3>Optional: Manually enter data (leave blank to use automatic data)</h3>
+        <label for="user-temperature">Temperature (°C):</label>
+        <input type="number" step="0.01" id="user-temperature" name="user-temperature" placeholder="Enter temperature"><br>
+
+        <label for="user-humidity">Humidity (%):</label>
+        <input type="number" step="0.01" id="user-humidity" name="user-humidity" placeholder="Enter humidity"><br>
+
+        <label for="user-rainfall">Rainfall (mm):</label>
+        <input type="number" step="0.01" id="user-rainfall" name="user-rainfall" placeholder="Enter rainfall"><br>
+
+        <button type="submit">Predict Crop</button>
+    </form>
+
+    <!-- Logout Button -->
+    <form action="/logout" method="GET" style="margin-top: 20px;">
+        <button type="submit">Logout</button>
+    </form>
+</body>
+</html>

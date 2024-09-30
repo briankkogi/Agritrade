@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - AgriTrade</title>
+    <link rel="stylesheet" href="/static/signup.css">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
+            authDomain: "agritrade-3fe65.firebaseapp.com",
+            projectId: "agritrade-3fe65",
+            storageBucket: "agritrade-3fe65.appspot.com",
+            messagingSenderId: "742671449846",
+            appId: "1:742671449846:web:2bd6f4b4cd0772bee6b6d7",
+            measurementId: "G-5NSK9449FG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);  // Initialize Firestore
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('signup-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const username = document.getElementById('username').value; // Get username
+
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+                        const user = userCredential.user;
+                        console.log('Sign up successful:', user);
+
+                        // Save user info to Firestore
+                        await setDoc(doc(db, 'users', user.uid), {
+                            email: email,
+                            username: username,  // Save username
+                            createdAt: new Date().toISOString()
+                        });
+                        
+                        window.location.href = "/login";  
+                    })
+                    .catch((error) => {
+                        const errorMessage = error.message;
+                        document.getElementById('error-message').textContent = errorMessage;
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <main>
+        <div class="login-container">
+            <div class="login-box">
+                <h1>AgriTrade Sign Up</h1>
+                <form id="signup-form">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" required> <!-- Added username field -->
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+
+                    <button type="submit">Sign Up</button>
+                </form>
+                <p id="error-message" class="error-message"></p>
+                <p>Already have an account? <a href="/login">Login here</a></p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

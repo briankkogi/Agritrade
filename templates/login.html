@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AgriTrade</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
+            authDomain: "agritrade-3fe65.firebaseapp.com",
+            databaseURL: "https://agritrade-3fe65-default-rtdb.firebaseio.com",
+            projectId: "agritrade-3fe65",
+            storageBucket: "agritrade-3fe65.appspot.com",
+            messagingSenderId: "742671449846",
+            appId: "1:742671449846:web:2bd6f4b4cd0772bee6b6d7",
+            measurementId: "G-5NSK9449FG"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Handle login
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('login-form').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent form submission
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // Sign in user
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        console.log('Login successful:', user);
+                        // Get the JWT token
+                        user.getIdToken().then(function(token) {
+                            // Send the token to your Flask app for verification
+                            fetch('/verify_token', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ token: token })
+                            }).then(response => {
+                                if (response.ok) {
+                                    window.location.href = "/home";  // Redirect to Flask homepage or dashboard
+                                } else {
+                                    document.getElementById('error-message').textContent = 'Login failed. Please try again.';
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        const errorMessage = error.message;
+                        document.getElementById('error-message').textContent = errorMessage;
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Login to AgriTrade</h1>
+            <form id="login-form">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+
+                <button type="submit">Login</button>
+            </form>
+            <p id="error-message" class="error-message"></p>
+            <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+        </div>
+    </div>
+</body>
+</html>
