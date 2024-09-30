@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriTrade</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='welcome.css') }}">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+            <span>AGRITRADE</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('welcome') }}">HOME</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">ABOUT US</a></li>
+                <li><a href="{{ url_for('login') }}">LOGIN</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="intro fade-in">
+            <h1>What is AgriTrade?</h1>
+            <p>AgriTrade is a platform that connects farmers, suppliers, and customers, creating an online marketplace for agricultural trade.</p>
+            <p>With real-time weather predictions and market insights, AgriTrade helps farmers make informed decisions and stay ahead of the curve. Join our growing community to explore new opportunities, share knowledge, and build stronger relationships across the agricultural sector.</p>
+        </section>
+
+        <section class="goal fade-in">
+            <div class="goal-text">
+                <h2>Our Goal</h2>
+                <p>Our goal is to empower farmers by providing an interactive space where they can manage their product inventory, connect with trusted suppliers, and reach a wider customer base.</p>
+            </div>
+            <div class="goal-images">
+                <img src="{{ url_for('static', filename='Farmer Image.jpeg') }}" alt="Farmer Image">
+                <img src="{{ url_for('static', filename='Farm Field.jpeg') }}" alt="Farm Field">
+            </div>
+        </section>
+
+        <section class="quote fade-in">
+            <blockquote>
+                <p>"When tillage begins, other arts follow. The farmers therefore are the founders of human civilization."</p>
+                <cite>— Daniel Webster</cite>
+            </blockquote>
+        </section>
+    </main>
+
+    <footer>
+        <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Footer Logo">
+        <p>© AgriTrade. All Rights Reserved</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.fade-in');
+
+            const options = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const callback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(callback, options);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
