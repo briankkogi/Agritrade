@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - AgriTrade</title>
-    <link rel="stylesheet" href="/static/signup.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
@@ -22,7 +22,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);  // Initialize Firestore
+        const db = getFirestore(app);
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('signup-form').addEventListener('submit', function(event) {
@@ -40,10 +40,10 @@
                         // Save user info to Firestore
                         await setDoc(doc(db, 'users', user.uid), {
                             email: email,
-                            username: username,  // Save username
+                            username: username,
                             createdAt: new Date().toISOString()
                         });
-                        
+
                         window.location.href = "/login";  
                     })
                     .catch((error) => {
@@ -55,26 +55,39 @@
     </script>
 </head>
 <body>
-    <main>
-        <div class="login-container">
-            <div class="login-box">
-                <h1>AgriTrade Sign Up</h1>
-                <form id="signup-form">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" required> <!-- Added username field -->
-
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" required>
-
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" required>
-
-                    <button type="submit">Sign Up</button>
-                </form>
-                <p id="error-message" class="error-message"></p>
-                <p>Already have an account? <a href="/login">Login here</a></p>
-            </div>
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+            <span>AGRITRADE</span>
         </div>
-    </main>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('welcome') }}">HOME</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">ABOUT US</a></li>
+                <li><a href="{{ url_for('login') }}">LOGIN</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="signup-container fade-in">
+        <div class="signup-box">
+            <h1>AgriTrade Sign Up</h1>
+            <form id="signup-form">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+
+                <button type="submit">Sign Up</button>
+            </form>
+            <p id="error-message" class="error-message"></p>
+            <p>Already have an account? <a href="/login">Login here</a></p>
+        </div>
+    </div>
 </body>
 </html>

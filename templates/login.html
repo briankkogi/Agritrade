@@ -66,7 +66,22 @@
     </script>
 </head>
 <body>
-    <div class="login-container">
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+            <span>AGRITRADE</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('welcome') }}">HOME</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">ABOUT US</a></li>
+                <li><a href="{{ url_for('login') }}">LOGIN</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="login-container fade-in">
         <div class="login-box">
             <h1>Login to AgriTrade</h1>
             <form id="login-form">
