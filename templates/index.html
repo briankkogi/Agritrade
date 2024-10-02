@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crop Prediction</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Function to get the user's location using Geolocation API
@@ -180,57 +181,77 @@
     </script>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="{{ url_for('logout') }}">Logout</a></li>
-        </ul>
-    </nav>
-
-    <h1>Welcome to Crop Prediction</h1>
-
-    <!-- Forecast Widget -->
-    <div id="forecast-widget">
-        <h2>5-Day Forecast</h2>
-        <div id="forecast-container">
-            <!-- Forecast days will be dynamically populated here -->
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+            <span>AGRITRADE</span>
         </div>
-        <canvas id="temperature-chart" width="400" height="200"></canvas>
-    </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}" class="active">HOME</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">ABOUT US</a></li>
+                <li><a href="{{ url_for('logout') }}">LOGOUT</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <!-- Weather Information Section -->
-    <div id="weather-info">
-        <p id="location">Location: </p>
-        <p id="temperature">Temperature: </p>
-        <p id="humidity">Humidity: </p>
-        <p id="rainfall">Rainfall: </p>
-    </div>
+    <main>
+        <div class="container">
+            <!-- Forecast Widget -->
+            <section id="forecast-widget">
+                <h2>5-Day Forecast</h2>
+                <div id="forecast-container">
+                    <!-- Forecast days will be dynamically populated here -->
+                </div>
+                <canvas id="temperature-chart" width="400" height="200"></canvas>
+            </section>
 
-    <!-- Form for Crop Prediction -->
-    <form method="POST" action="/predict">
-        <!-- Hidden fields to store automatic weather data for prediction -->
-        <input type="hidden" id="latitude" name="latitude">
-        <input type="hidden" id="longitude" name="longitude">
-        <input type="hidden" id="temperature-input" name="temperature">
-        <input type="hidden" id="humidity-input" name="humidity">
-        <input type="hidden" id="rainfall-input" name="rainfall">
+            <div class="right-section">
+                <!-- Weather Information Section -->
+                <section id="weather-info">
+                    <h3>Current Weather Information</h3>
+                    <p id="location">Location: </p>
+                    <p id="temperature">Temperature: </p>
+                    <p id="humidity">Humidity: </p>
+                    <p id="rainfall">Rainfall: </p>
+                </section>
 
-        <h3>Optional: Manually enter data (leave blank to use automatic data)</h3>
-        <label for="user-temperature">Temperature (°C):</label>
-        <input type="number" step="0.01" id="user-temperature" name="user-temperature" placeholder="Enter temperature"><br>
+                <!-- Form for Crop Prediction -->
+                <section id="prediction-form">
+                    <h3>Crop Prediction Form</h3>
+                    <form method="POST" action="/predict">
+                        <!-- Hidden fields to store automatic weather data for prediction -->
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+                        <input type="hidden" id="temperature-input" name="temperature">
+                        <input type="hidden" id="humidity-input" name="humidity">
+                        <input type="hidden" id="rainfall-input" name="rainfall">
 
-        <label for="user-humidity">Humidity (%):</label>
-        <input type="number" step="0.01" id="user-humidity" name="user-humidity" placeholder="Enter humidity"><br>
+                        <h4>Optional: Manually enter data (leave blank to use automatic data)</h4>
+                        <label for="user-temperature">Temperature (°C):</label>
+                        <input type="number" step="0.01" id="user-temperature" name="user-temperature" placeholder="Enter temperature"><br>
 
-        <label for="user-rainfall">Rainfall (mm):</label>
-        <input type="number" step="0.01" id="user-rainfall" name="user-rainfall" placeholder="Enter rainfall"><br>
+                        <label for="user-humidity">Humidity (%):</label>
+                        <input type="number" step="0.01" id="user-humidity" name="user-humidity" placeholder="Enter humidity"><br>
 
-        <button type="submit">Predict Crop</button>
-    </form>
+                        <label for="user-rainfall">Rainfall (mm):</label>
+                        <input type="number" step="0.01" id="user-rainfall" name="user-rainfall" placeholder="Enter rainfall"><br>
 
-    <!-- Logout Button -->
-    <form action="/logout" method="GET" style="margin-top: 20px;">
-        <button type="submit">Logout</button>
-    </form>
+                        <button type="submit">Predict Crop</button>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+        </div>
+        <p>© AgriTrade. All Rights Reserved</p>
+    </footer>
 </body>
 </html>

@@ -1,28 +1,24 @@
-/* Resetting default styles */
+/* General resets */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-/* Ensures the body takes the full height of the viewport */
-html, body {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
+/* Full body styling */
+body {
+    font-family: 'Open Sans', sans-serif;
     color: #333;
+    background-color: #f5f5f5;
 }
 
-/* Header section styling */
+/* Header section */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 40px;
     background-color: #ffffff;
-    border-bottom: 2px solid #00cc66;
+    padding: 20px 40px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -32,8 +28,8 @@ header {
 }
 
 .logo img {
-    height: 50px; /* Increased size for better visibility */
-    margin-right: 15px;
+    height: 50px;
+    margin-right: 10px;
 }
 
 nav ul {
@@ -47,117 +43,105 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: #333;
     font-weight: bold;
+    color: #333;
     transition: color 0.3s;
 }
 
+nav ul li a.active {
+    color: #00cc66;
+}
+
 nav ul li a:hover {
-    color: #00cc66; /* Change color on hover */
+    color: #00cc66;
 }
 
-/* Fade-in Animation for Sections */
-.intro, .goal, .quote {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-}
-
-.fade-in-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Intro section */
+/* Hero (What is AgriTrade) section */
 .intro {
     background-color: #00cc66;
     color: white;
-    padding: 70px 20px;
+    padding: 80px 20px;
     text-align: center;
 }
 
 .intro h1 {
-    font-size: 42px; /* Increased font size */
+    font-size: 42px;
     margin-bottom: 20px;
-    font-weight: 600; /* Bolder text */
 }
 
 .intro p {
-    font-size: 20px;
-    line-height: 1.8;
-    max-width: 800px; /* Limit width for better readability */
-    margin: 0 auto; /* Center the paragraph */
+    font-size: 18px;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
 /* Goal section styling */
 .goal {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Align content vertically centered */
-    padding: 50px 40px;
+    align-items: center;
+    padding: 60px 40px;
     background-color: #ffffff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-top: -20px;
 }
 
 .goal-text {
-    width: 50%;
+    flex: 1;
 }
 
 .goal-text h2 {
-    font-size: 36px; /* Increased font size */
-    margin-bottom: 20px; /* Space below the heading */
+    font-size: 36px;
+    margin-bottom: 20px;
 }
 
 .goal-text p {
     font-size: 18px;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
-.goal-images {
-    display: flex;
-    gap: 20px;
-}
-
-.goal-images img {
-    width: 250px; /* Adjusted width */
-    height: auto;
-    border-radius: 10px; /* Rounded corners */
-    transition: transform 0.3s;
-}
-
-.goal-images img:hover {
-    transform: scale(1.05); /* Zoom effect on hover */
+.goal-image img {
+    max-width: 400px;
+    border-radius: 8px;
 }
 
 /* Quote section styling */
 .quote {
-    background-color: #f0f0f0;
-    padding: 50px 20px;
-    text-align: center;
-    font-style: italic;
+    display: flex;
+    align-items: center;
+    padding: 50px;
+    background-color: #f5f5f5;
 }
 
-.quote p {
+.quote-image img {
+    max-width: 400px;
+    border-radius: 10px;
+    margin-right: 30px;
+}
+
+blockquote {
     font-size: 24px;
-    margin-bottom: 10px;
+    font-style: italic;
+    line-height: 1.5;
+    color: #333;
 }
 
-.quote cite {
-    font-size: 18px;
-    font-weight: bold; /* Bold for citation */
+blockquote cite {
+    display: block;
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #555;
 }
 
-/* Footer remains at the bottom */
+/* Footer styling */
 footer {
     background-color: #00cc66;
     color: white;
     text-align: center;
     padding: 20px;
-    margin-top: auto; /* Pushes footer to the bottom */
 }
 
-footer img {
-    height: 40px; /* Increased footer logo size */
+.footer-logo img {
+    height: 40px;
     margin-bottom: 10px;
 }
