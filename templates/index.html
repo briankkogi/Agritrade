@@ -192,7 +192,15 @@
             <ul>
                 <li><a href="{{ url_for('home') }}" class="active">PREDICTION</a></li>
                 <li><a href="{{ url_for('dashboard') }}">DASHBOARD</a></li>
-                <li><a href="{{ url_for('logout') }}">LOGOUT</a></li>
+                <li>
+                    <!-- Dropdown for username and logout -->
+                    <div class="dropdown">
+                        <span id="user-info">User</span>
+                        <div class="dropdown-content">
+                            <a href="/logout">Logout</a>
+                        </div>
+                    </div>
+                </li>
             </ul>
         </nav>
     </header>
@@ -253,5 +261,67 @@
         </div>
         <p>© AgriTrade. All Rights Reserved</p>
     </footer>
+
+    <!-- Firebase Authentication and Firestore Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
+            authDomain: "agritrade-3fe65.firebaseapp.com",
+            databaseURL: "https://agritrade-3fe65-default-rtdb.firebaseio.com",
+            projectId: "agritrade-3fe65",
+            storageBucket: "agritrade-3fe65.appspot.com",
+            messagingSenderId: "742671449846",
+            appId: "1:742671449846:web:2bd6f4b4cd0772bee6b6d7",
+            measurementId: "G-5NSK9449FG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const displayUserName = async (userEmail) => {
+            const userInfoElement = document.getElementById('user-info');
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, where("email", "==", userEmail));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.username) {
+                        userInfoElement.textContent = userData.username;
+                    } else {
+                        userInfoElement.textContent = "User";
+                    }
+                });
+            } else {
+                console.error("No user data found in Firestore.");
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userEmail = user.email;
+                displayUserName(userEmail);
+            } else {
+                console.error("No user is signed in.");
+            }
+        });
+
+        const signOutButton = document.querySelector('.dropdown-content a');
+        signOutButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            signOut(auth).then(() => {
+                console.log("User signed out.");
+                window.location.href = "/logout";
+            }).catch((error) => {
+                console.error("Sign out error:", error);
+            });
+        });
+    </script>
 </body>
 </html>
