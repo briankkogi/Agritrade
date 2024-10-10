@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AgriTrade</title>
+    <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+            <span>AGRITRADE</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/home">PREDICTION</a></li>
+                <li><a href="/dashboard" class="active">DASHBOARD</a></li>
+                <li><a href="/logout">LOGOUT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Dashboard Overview Section -->
+    <main>
+        <section class="overview">
+            <div class="overview-card">
+                <h3>Current Crops</h3>
+                <p>Active crops: 5</p>
+            </div>
+            <div class="overview-card">
+                <h3>Farm Statistics</h3>
+                <p>Total crops: 12</p>
+                <p>Estimated yield: 500 kg</p>
+            </div>
+            <div class="overview-card">
+                <h3>Weather Forecast</h3>
+                <p>Sunny, 25°C</p>
+            </div>
+        </section>
+
+        <!-- Graphs/Charts Section -->
+        <section class="charts">
+            <h2>Production Trends</h2>
+            <div class="chart-container">
+                <p>[Graph will be placed here]</p>
+            </div>
+
+            <h2>Soil/Climate Conditions</h2>
+            <div class="chart-container">
+                <p>[Graph will be placed here]</p>
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section class="recommendations">
+            <h2>Crop Suggestions</h2>
+            <p>We recommend planting rice and corn based on your location and climate conditions.</p>
+
+            <h2>Profitability Estimates</h2>
+            <p>Estimated profitability for rice: $200/acre</p>
+            <p>Estimated profitability for corn: $150/acre</p>
+        </section>
+
+        <!-- Recent Activities Section -->
+        <section class="activities">
+            <h2>Recent Activities</h2>
+            <ul>
+                <li>Planted wheat on 2 acres (October 5, 2024)</li>
+                <li>Harvested tomatoes (September 28, 2024)</li>
+                <li>New crop recommendations received (October 10, 2024)</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+        </div>
+        <p>© AgriTrade. All Rights Reserved</p>
+    </footer>
+</body>
+</html>
