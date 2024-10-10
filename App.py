@@ -29,18 +29,18 @@ firebase_admin.initialize_app(cred)
 # Initialize Firestore
 db = firestore.client()
 
-# Redirect the root route to the welcome page
+# Redirect the root route to the welcome page or dashboard if logged in
 @app.route('/')
 def index():
     if 'user' in session:
-        return redirect(url_for('home'))  # Redirect to home if logged in
-    return redirect(url_for('welcome'))  # Redirect to the welcome page for unauthenticated users
+        return redirect(url_for('dashboard'))  # Redirect to the dashboard if logged in
+    return redirect(url_for('welcome'))  # Redirect to welcome page if unauthenticated
 
 
 @app.route('/welcome')
 def welcome():
     if 'user' in session:
-        return redirect(url_for('home'))  # Redirect to home if already logged in
+        return redirect(url_for('dashboard'))  # Redirect to dashboard if already logged in
     return render_template('welcome.html')  # Render the welcome page
 
 # Route for the login page
@@ -50,18 +50,23 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        # Firebase user login (not checking password here for simplicity)
         try:
+            # Firebase user login
             user = auth.get_user_by_email(email)
-            session['user'] = user.email
+            
+            # Assuming password verification is done elsewhere, or add Firebase authentication check
+            session['user'] = user.email  # Store email in session
             logging.debug(f"User logged in: {user.email}")
-            return redirect(url_for('home'))
+
+            # Redirect to dashboard after login
+            return redirect(url_for('dashboard'))
         except Exception as e:
             logging.error(f"Login failed for {email}: {e}")
             return render_template('login.html', error="Login failed. Please check your credentials.")
 
     return render_template('login.html')
 
+# Route for the signup page
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -103,15 +108,26 @@ def verify_token():
         logging.error(f"Token verification failed: {e}")
         return jsonify(success=False), 401  # Unauthorized
 
-# Route for the homepage/dashboard
-@app.route('/home')
-def home():
+# Route for the dashboard page
+@app.route('/dashboard')
+def dashboard():
     if 'user' not in session:
         logging.debug("User not in session, redirecting to login")
         return redirect(url_for('login'))
 
-    logging.debug("User in session, rendering index.html")
-    return render_template('index.html', location=None, temperature=None, humidity=None, rainfall=None)
+    logging.debug("User in session, rendering dashboard.html")
+    return render_template('dashboard.html')
+
+# Route for the home page
+@app.route('/home')
+def home():
+    # Check if the user is logged in
+    if 'user' not in session:
+        logging.debug("User not in session, redirecting to login")
+        return redirect(url_for('login'))
+
+    logging.debug("User accessed home page")
+    return render_template('index.html')  # Replace 'home.html' with the name of your HTML file
 
 # Route to log out the user
 @app.route('/logout')
@@ -229,8 +245,6 @@ def predict():
     except Exception as e:
         logging.error(f"Error in prediction: {e}")
         return str(e)
-    
-
 
 # Flask app entry point
 if __name__ == '__main__':

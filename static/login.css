@@ -1,25 +1,24 @@
-/* Resetting default styles */
+/* General resets */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-/* Ensures the body takes the full height of the viewport */
-html, body {
-    height: 100%;
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
+/* Full body styling */
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+    background-color: #f5f5f5;
 }
 
-/* Header section styling */
+/* Header section */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 40px;
     background-color: #ffffff;
-    border-bottom: 2px solid #00cc66;
+    padding: 20px 40px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -29,8 +28,8 @@ header {
 }
 
 .logo img {
-    height: 50px; /* Increased size for better visibility */
-    margin-right: 15px;
+    height: 50px;
+    margin-right: 10px;
 }
 
 nav ul {
@@ -43,18 +42,23 @@ nav ul li {
 }
 
 nav ul li a {
-    text-decoration: none;
-    color: #333;
+    text-decoration: none; 
     font-weight: bold;
+    color: #333;
     transition: color 0.3s;
+}
+
+nav ul li a.active {
+    color: #00cc66;
 }
 
 nav ul li a:hover {
     color: #00cc66; /* Change color on hover */
+    text-decoration: none; /* Ensure no underline on hover */
 }
 
-/* Center the login box */
-.login-container {
+/* Login section styling */
+.login-section {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -68,7 +72,6 @@ nav ul li a:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 350px;
     text-align: center;
-    animation: fadeIn 0.5s ease-in-out; /* Fade-in effect */
 }
 
 .login-box h1 {
@@ -129,14 +132,15 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Fade-in animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Footer styling */
+footer {
+    background-color: #00cc66;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.footer-logo img {
+    height: 40px;
+    margin-bottom: 10px;
 }

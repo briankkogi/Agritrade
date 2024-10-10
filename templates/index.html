@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crop Prediction</title>
+    <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -189,9 +190,8 @@
         </div>
         <nav>
             <ul>
-                <li><a href="{{ url_for('home') }}" class="active">HOME</a></li>
-                <li><a href="#">RESOURCES</a></li>
-                <li><a href="#">ABOUT US</a></li>
+                <li><a href="{{ url_for('home') }}" class="active">PREDICTION</a></li>
+                <li><a href="{{ url_for('dashboard') }}">DASHBOARD</a></li>
                 <li><a href="{{ url_for('logout') }}">LOGOUT</a></li>
             </ul>
         </nav>

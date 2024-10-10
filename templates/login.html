@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - AgriTrade</title>
+    <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
             authDomain: "agritrade-3fe65.firebaseapp.com",
@@ -22,26 +22,19 @@
             measurementId: "G-5NSK9449FG"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Handle login
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('login-form').addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent form submission
-
+                event.preventDefault();
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
 
-                // Sign in user
                 signInWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
                         const user = userCredential.user;
-                        console.log('Login successful:', user);
-                        // Get the JWT token
                         user.getIdToken().then(function(token) {
-                            // Send the token to your Flask app for verification
                             fetch('/verify_token', {
                                 method: 'POST',
                                 headers: {
@@ -50,7 +43,7 @@
                                 body: JSON.stringify({ token: token })
                             }).then(response => {
                                 if (response.ok) {
-                                    window.location.href = "/home";  // Redirect to Flask homepage or dashboard
+                                    window.location.href = "/dashboard";  
                                 } else {
                                     document.getElementById('error-message').textContent = 'Login failed. Please try again.';
                                 }
@@ -76,26 +69,35 @@
                 <li><a href="{{ url_for('welcome') }}">HOME</a></li>
                 <li><a href="#">RESOURCES</a></li>
                 <li><a href="#">ABOUT US</a></li>
-                <li><a href="{{ url_for('login') }}">LOGIN</a></li>
+                <li><a href="{{ url_for('login') }}" class="active">LOGIN</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="login-container fade-in">
-        <div class="login-box">
-            <h1>Login to AgriTrade</h1>
-            <form id="login-form">
-                <label for="email">Email:</label>
-                <input type="email" id="email" required>
+    <main>
+        <section class="login-section">
+            <div class="login-box">
+                <h1>Login to AgriTrade</h1>
+                <form id="login-form">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
 
-                <label for="password">Password:</label>
-                <input type="password" id="password" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
 
-                <button type="submit">Login</button>
-            </form>
-            <p id="error-message" class="error-message"></p>
-            <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+                    <button type="submit">Login</button>
+                </form>
+                <p id="error-message" class="error-message"></p>
+                <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
         </div>
-    </div>
+        <p>© AgriTrade. All Rights Reserved</p>
+    </footer>
 </body>
 </html>
