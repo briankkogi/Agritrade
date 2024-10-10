@@ -36,7 +36,6 @@ def index():
         return redirect(url_for('dashboard'))  # Redirect to the dashboard if logged in
     return redirect(url_for('welcome'))  # Redirect to welcome page if unauthenticated
 
-
 @app.route('/welcome')
 def welcome():
     if 'user' in session:
@@ -94,7 +93,6 @@ def signup():
 
     return render_template('signup.html')
 
-
 # Verify the JWT token received from the Firebase client
 @app.route('/verify_token', methods=['POST'])
 def verify_token():
@@ -117,6 +115,16 @@ def dashboard():
 
     logging.debug("User in session, rendering dashboard.html")
     return render_template('dashboard.html')
+
+# Route for the inventory page
+@app.route('/inventory')
+def inventory():
+    if 'user' not in session:
+        logging.debug("User not in session, redirecting to login")
+        return redirect(url_for('login'))
+
+    logging.debug("User accessed inventory page")
+    return render_template('inventory.html')
 
 # Route for the home page
 @app.route('/home')

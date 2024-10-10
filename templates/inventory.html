@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;  /* Space between content and footer */
+            height: 300px;  /* Fixed height for the container */
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #007bff;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        p {
+            font-size: 1em;
+            margin: 0;
+            color: #666;
+            flex-grow: 1;  /* Allow the paragraph to grow and fill space */
+        }
+        .footer {
+            font-size: 0.8em;
+            color: #999;
+            text-align: center;  /* Center-align footer text */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Coming Soon!</h1>
+        <p>Our inventory management feature is in development.</p>
+        <div class="footer">© 2024 AgriTrade</div>
+    </div>
+</body>
+</html>

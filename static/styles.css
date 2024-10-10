@@ -19,7 +19,12 @@ header {
     align-items: center;
     background-color: #ffffff;
     padding: 20px 40px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #e0e0e0;
+    position: fixed; /* Make header fixed */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Ensure header is above other content */
 }
 
 .logo {
@@ -28,13 +33,13 @@ header {
 }
 
 .logo img {
-    height: 50px;
-    margin-right: 10px;
+    height: 40px;
+    margin-right: 15px;
 }
 
 nav ul {
-    list-style: none;
     display: flex;
+    list-style-type: none;
 }
 
 nav ul li {
@@ -43,19 +48,15 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    font-weight: bold;
     color: #333;
+    font-weight: bold;
     transition: color 0.3s;
 }
 
+nav ul li a:hover,
 nav ul li a.active {
-    color: #00cc66;
+    color: #4CAF50;
 }
-
-nav ul li a:hover {
-    color: #00cc66;
-}
-
 /* Dropdown styling */
 .dropdown {
     position: relative;
@@ -71,7 +72,7 @@ nav ul li a:hover {
     position: absolute;
     background-color: white;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
 
@@ -90,12 +91,79 @@ nav ul li a:hover {
     display: block;
 }
 
+/* Sidebar styling */
+.sidebar {
+    width: 250px;
+    background-color: #4CAF50; /* Changed to green */
+    height: calc(100vh - 80px); /* Full height minus the header height */
+    position: fixed;
+    top: 80px; /* Position below the header */
+    left: 0;
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column; /* Ensure sidebar items go top to bottom */
+    transition: width 0.3s ease; /* Smooth transition for width */
+}
+
+.sidebar.minimized {
+    width: 90px; /* Minimized width */
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    width: 90%; /* Make sure the sidebar items take the full width */
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+}
+
+.sidebar ul li {
+    width: 100%; /* Ensure the list item takes full width */
+}
+
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    color: #f9f9f9; /* Keep the text color white */
+    padding: 20px; /* Increase padding for larger clickable area */
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px; /* Increased font size */
+    transition: background-color 0.3s ease, border 0.3s ease; /* Added transition for border */
+    width: 100%; /* Ensure anchor tags take full width */
+}
+
+/* Active and hover states */
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    color: #000; /* Change text color on hover and active */
+    background-color: #f9f9f9; /* Set background color to white for active */
+    border-left: 5px solid #4CAF50; /* Add a left border with the sidebar color */
+}
+
+.sidebar ul li a .icon {
+    font-size: 24px; /* Increase icon size */
+    margin-right: 20px; /* Increase spacing between icon and text */
+}
+
+/* Hide text in minimized sidebar */
+.sidebar.minimized ul li a .text {
+    display: none; /* Hide text when minimized */
+}
 
 /* Main content styling */
 main {
-    width: 100%; /* Full width for the main content */
+    margin-left: 270px; /* Default space for the sidebar */
+    padding-top: 20px; /* Space for the fixed header */
     display: flex; /* Use flexbox for layout */
     justify-content: center; /* Center the main content */
+    transition: margin-left 0.3s ease; /* Smooth transition for margin */
+}
+
+/* Adjust margin when sidebar is minimized */
+.sidebar-minimized {
+    margin-left: 90px; /* Margin for minimized sidebar */
 }
 
 .container {
@@ -171,41 +239,44 @@ canvas {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-#prediction-form label {
-    display: block;
-    margin: 10px 0 5px;
-}
-
-#prediction-form input {
-    width: 100%; /* Full width for inputs */
-    padding: 8px;
-    margin-bottom: 10px;
+input[type="text"],
+input[type="date"],
+input[type="number"] {
+    width: calc(100% - 20px); /* Full width minus padding */
+    padding: 10px;
+    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-#prediction-form button {
+input[type="submit"] {
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    border-radius: 4px;
+    padding: 10px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-#prediction-form button:hover {
-    background-color: #45a049;
+input[type="submit"]:hover {
+    background-color: #45a049; /* Darker green on hover */
 }
 
 /* Footer styling */
 footer {
-    background-color: #00cc66;
-    color: white;
+    margin-top: 50px;
+    background-color: #4CAF50; /* Changed to green */
+    color: #fff; /* Keep the text color white */
     text-align: center;
     padding: 20px;
 }
 
 .footer-logo img {
-    height: 40px;
+    width: 80px;
     margin-bottom: 10px;
+}
+
+footer p {
+    font-size: 14px;
 }

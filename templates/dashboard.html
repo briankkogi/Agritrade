@@ -6,80 +6,94 @@
     <title>Dashboard - AgriTrade</title>
     <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"> <!-- Boxicons CSS -->
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
-            <span>AGRITRADE</span>
-        </div>
-        <nav>
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
             <ul>
-                <li><a href="/dashboard" class="active">DASHBOARD</a></li>
-                <li><a href="/home">PREDICTION</a></li>
-                <li>
-                    <!-- Dropdown for username and logout -->
-                    <div class="dropdown">
-                        <span id="user-info">User</span>
-                        <div class="dropdown-content">
-                            <a href="/logout">Logout</a>
-                        </div>
-                    </div>
-                </li>
+                <li><a href="/dashboard" class="active"><span class="icon"><i class='bx bx-home'></i></span><span class="text"> Dashboard</span></a></li>
+                <li><a href="/inventory"><span class="icon"><i class='bx bx-list-ul'></i></span><span class="text"> Inventory</span></a></li>
+                <li><a href="/home"><span class="icon"><i class='bx bx-bar-chart'></i></span><span class="text"> Predictions</span></a></li>
             </ul>
         </nav>
-    </header>
 
-    <!-- Dashboard Content -->
-    <main>
-        <section class="overview">
-            <div class="overview-card">
-                <h3>Current Crops</h3>
-                <p>Active crops: 5</p>
-            </div>
-            <div class="overview-card">
-                <h3>Farm Statistics</h3>
-                <p>Total crops: 12</p>
-                <p>Estimated yield: 500 kg</p>
-            </div>
-            <div class="overview-card">
-                <h3>Weather Forecast</h3>
-                <p>Sunny, 25°C</p>
-            </div>
-        </section>
+        <!-- Main content area -->
+        <div class="main-content">
+            <!-- Header -->
+            <header>
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+                    <span>AGRITRADE</span>
+                </div>
+                <nav>
+                    <ul>
+                        <!--<li><a href="/dashboard" class="active">DASHBOARD</a></li>
+                        <li><a href="/home">PREDICTION</a></li>-->
+                        <li>
+                            <div class="dropdown">
+                                <span id="user-info">User</span>
+                                <div class="dropdown-content">
+                                    <a href="/logout">Logout</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
 
-        <section class="charts">
-            <h2>Production Trends</h2>
-            <div class="chart-container">
-                <p>[Graph will be placed here]</p>
-            </div>
+            <!-- Dashboard Content -->
+            <main>
+                <section class="overview">
+                    <div class="overview-card">
+                        <h3>Current Crops</h3>
+                        <p>Active crops: 5</p>
+                    </div>
+                    <div class="overview-card">
+                        <h3>Farm Statistics</h3>
+                        <p>Total crops: 12</p>
+                        <p>Estimated yield: 500 kg</p>
+                    </div>
+                    <div class="overview-card">
+                        <h3>Weather Forecast</h3>
+                        <p>Sunny, 25°C</p>
+                    </div>
+                </section>
 
-            <h2>Soil/Climate Conditions</h2>
-            <div class="chart-container">
-                <p>[Graph will be placed here]</p>
-            </div>
-        </section>
+                <section class="charts">
+                    <h2>Production Trends</h2>
+                    <div class="chart-container">
+                        <p>[Graph will be placed here]</p>
+                    </div>
 
-        <section class="recommendations">
-            <h2>Crop Suggestions</h2>
-            <p>We recommend planting rice and corn based on your location and climate conditions.</p>
+                    <h2>Soil/Climate Conditions</h2>
+                    <div class="chart-container">
+                        <p>[Graph will be placed here]</p>
+                    </div>
+                </section>
 
-            <h2>Profitability Estimates</h2>
-            <p>Estimated profitability for rice: $200/acre</p>
-            <p>Estimated profitability for corn: $150/acre</p>
-        </section>
+                <section class="recommendations">
+                    <h2>Crop Suggestions</h2>
+                    <p>We recommend planting rice and corn based on your location and climate conditions.</p>
 
-        <section class="activities">
-            <h2>Recent Activities</h2>
-            <ul>
-                <li>Planted wheat on 2 acres (October 5, 2024)</li>
-                <li>Harvested tomatoes (September 28, 2024)</li>
-                <li>New crop recommendations received (October 10, 2024)</li>
-            </ul>
-        </section>
-    </main>
+                    <h2>Profitability Estimates</h2>
+                    <p>Estimated profitability for rice: $200/acre</p>
+                    <p>Estimated profitability for corn: $150/acre</p>
+                </section>
+
+                <section class="activities">
+                    <h2>Recent Activities</h2>
+                    <ul>
+                        <li>Planted wheat on 2 acres (October 5, 2024)</li>
+                        <li>Harvested tomatoes (September 28, 2024)</li>
+                        <li>New crop recommendations received (October 10, 2024)</li>
+                    </ul>
+                </section>
+            </main>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -148,6 +162,28 @@
             }).catch((error) => {
                 console.error("Sign out error:", error);
             });
+        });
+
+        // Sidebar toggle functionality
+        const sidebar = document.getElementById('sidebar');
+        let isSidebarMinimized = false;
+
+        const toggleSidebar = () => {
+            if (isSidebarMinimized) {
+                sidebar.classList.remove('minimized');
+            } else {
+                sidebar.classList.add('minimized');
+            }
+            isSidebarMinimized = !isSidebarMinimized;
+        };
+
+        // Listen for mouse events to toggle the sidebar
+        sidebar.addEventListener('mouseover', () => {
+            if (isSidebarMinimized) toggleSidebar();
+        });
+
+        sidebar.addEventListener('mouseleave', () => {
+            if (!isSidebarMinimized) toggleSidebar();
         });
     </script>
 </body>
