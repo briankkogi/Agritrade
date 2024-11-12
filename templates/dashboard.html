@@ -7,7 +7,8 @@
     <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"> <!-- Boxicons CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -30,8 +31,6 @@
                 </div>
                 <nav>
                     <ul>
-                        <!--<li><a href="/dashboard" class="active">DASHBOARD</a></li>
-                        <li><a href="/home">PREDICTION</a></li>-->
                         <li>
                             <div class="dropdown">
                                 <span id="user-info">User</span>
@@ -48,48 +47,52 @@
             <main>
                 <section class="overview">
                     <div class="overview-card">
-                        <h3>Current Crops</h3>
-                        <p>Active crops: 5</p>
+                        <h3>CROP</h3>
+                        <select id="crop-select">
+                            <option>Maize</option>
+                            <option>Wheat</option>
+                            <option>Rice</option>
+                        </select>
                     </div>
                     <div class="overview-card">
-                        <h3>Farm Statistics</h3>
-                        <p>Total crops: 12</p>
-                        <p>Estimated yield: 500 kg</p>
+                        <h3>AREA</h3>
+                        <select id="area-select">
+                            <option>45 Acres</option>
+                            <option>50 Acres</option>
+                            <option>55 Acres</option>
+                        </select>
                     </div>
                     <div class="overview-card">
-                        <h3>Weather Forecast</h3>
-                        <p>Sunny, 25°C</p>
+                        <h3>Add a crop</h3>
+                        <button class="add-crop-btn" onclick="window.location.href='/inventory'">+ Add</button>
                     </div>
                 </section>
 
                 <section class="charts">
-                    <h2>Production Trends</h2>
                     <div class="chart-container">
-                        <p>[Graph will be placed here]</p>
+                        <h2>Financial Statistics</h2>
+                        <div class="stats-header">
+                            <div class="current-month">
+                                <span>Current Month</span>
+                                <strong>December</strong>
+                            </div>
+                            <div class="monthly-earnings">
+                                <span>Month's Earnings</span>
+                                <strong>9,877 Ksh</strong>
+                            </div>
+                        </div>
+                        <canvas id="financial-chart"></canvas>
                     </div>
 
-                    <h2>Soil/Climate Conditions</h2>
                     <div class="chart-container">
-                        <p>[Graph will be placed here]</p>
+                        <h2>Amounts Sold (KGs)</h2>
+                        <canvas id="sales-chart"></canvas>
                     </div>
                 </section>
 
-                <section class="recommendations">
-                    <h2>Crop Suggestions</h2>
-                    <p>We recommend planting rice and corn based on your location and climate conditions.</p>
-
-                    <h2>Profitability Estimates</h2>
-                    <p>Estimated profitability for rice: $200/acre</p>
-                    <p>Estimated profitability for corn: $150/acre</p>
-                </section>
-
-                <section class="activities">
-                    <h2>Recent Activities</h2>
-                    <ul>
-                        <li>Planted wheat on 2 acres (October 5, 2024)</li>
-                        <li>Harvested tomatoes (September 28, 2024)</li>
-                        <li>New crop recommendations received (October 10, 2024)</li>
-                    </ul>
+                <section class="inventory-overview">
+                    <h2>Recent Inventory Updates</h2>
+                    <ul id="inventory-list"></ul>
                 </section>
             </main>
         </div>
@@ -107,7 +110,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
@@ -148,8 +151,10 @@
             if (user) {
                 const userEmail = user.email;
                 displayUserName(userEmail);
+                fetchInventoryData(); // Fetch inventory data when user is authenticated
             } else {
                 console.error("No user is signed in.");
+                window.location.href = "/login"; // Redirect to login if not authenticated
             }
         });
 
@@ -185,6 +190,102 @@
         sidebar.addEventListener('mouseleave', () => {
             if (!isSidebarMinimized) toggleSidebar();
         });
+
+        // Fetch and display inventory data
+        async function fetchInventoryData() {
+            const inventoryRef = collection(db, "inventory");
+            const q = query(inventoryRef, orderBy("updatedAt", "desc"), limit(5));
+            const querySnapshot = await getDocs(q);
+            
+            const inventoryList = document.getElementById('inventory-list');
+            inventoryList.innerHTML = ''; // Clear existing content
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const listItem = document.createElement('li');
+                listItem.textContent = `${data.cropName}: ${data.quantity} KG (${data.status})`;
+                inventoryList.appendChild(listItem);
+            });
+        }
+
+        // Call fetchInventoryData when the page loads
+        document.addEventListener('DOMContentLoaded', fetchInventoryData);
+    </script>
+
+    <!-- Chart.js Script -->
+    <script>
+        // Financial Statistics Chart
+        const financialCtx = document.getElementById('financial-chart').getContext('2d');
+        const financialChart = new Chart(financialCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Monthly Earnings (Ksh)',
+                    data: [11000, 8000, 12000, 11000, 7000, 10000, 10500, 10200, 11000, 9000, 8500, 12000],
+                    borderColor: '#4CAF50',
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return value.toLocaleString() + ' Ksh';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Amounts Sold Chart
+        const salesCtx = document.getElementById('sales-chart').getContext('2d');
+        const salesChart = new Chart(salesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Amount Sold (KGs)',
+                    data: [190, 210, 160, 105, 60, 70, 50, 60, 100, 90, 75, 105],
+                    backgroundColor: '#4CAF50'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return value + ' KG';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Event listeners for crop and area selects
+        document.getElementById('crop-select').addEventListener('change', updateCharts);
+        document.getElementById('area-select').addEventListener('change', updateCharts);
+
+        function updateCharts() {
+            // In a real application, you would fetch new data based on the selected crop and area
+            // For this example, we'll just randomize the data
+            const newFinancialData = financialChart.data.datasets[0].data.map(() => Math.floor(Math.random() * 15000) + 5000);
+            const newSalesData = salesChart.data.datasets[0].data.map(() => Math.floor(Math.random() * 200) + 50);
+
+            financialChart.data.datasets[0].data = newFinancialData;
+            salesChart.data.datasets[0].data = newSalesData;
+
+            financialChart.update();
+            salesChart.update();
+        }
     </script>
 </body>
 </html>

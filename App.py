@@ -135,7 +135,7 @@ def home():
         return redirect(url_for('login'))
 
     logging.debug("User accessed home page")
-    return render_template('index.html')  # Replace 'home.html' with the name of your HTML file
+    return render_template('index.html')  
 
 # Route to log out the user
 @app.route('/logout')
