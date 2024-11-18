@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='result.css') }}">
+    <style>
+        .crop-link {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .crop-link:hover {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Crop Prediction Result</h1>
+        <p>Based on the provided weather data, here are the predicted probabilities for each crop:</p>
+        
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Crop</th>
+                        <th>Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for crop, probability in crop_probabilities.items() %}
+                    <tr>
+                        <td><a href="/crop-details/{{ crop | urlencode }}" class="crop-link">{{ crop }}</a></td>
+                        <td>{{ "%.2f"|format(probability * 100) }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="back-link">
+            <a href="/">Go Back</a>
+        </div>
+    </div>
+</body>
+</html>

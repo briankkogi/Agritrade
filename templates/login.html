@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AgriTrade</title>
+    <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
+            authDomain: "agritrade-3fe65.firebaseapp.com",
+            databaseURL: "https://agritrade-3fe65-default-rtdb.firebaseio.com",
+            projectId: "agritrade-3fe65",
+            storageBucket: "agritrade-3fe65.appspot.com",
+            messagingSenderId: "742671449846",
+            appId: "1:742671449846:web:2bd6f4b4cd0772bee6b6d7",
+            measurementId: "G-5NSK9449FG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('login-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        user.getIdToken().then(function(token) {
+                            fetch('/verify_token', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ token: token })
+                            }).then(response => {
+                                if (response.ok) {
+                                    window.location.href = "/dashboard";  
+                                } else {
+                                    document.getElementById('error-message').textContent = 'Login failed. Please try again.';
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        const errorMessage = error.message;
+                        document.getElementById('error-message').textContent = errorMessage;
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+            <span>AGRITRADE</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('welcome') }}">HOME</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">ABOUT US</a></li>
+                <li><a href="{{ url_for('login') }}" class="active">LOGIN</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="login-section">
+            <div class="login-box">
+                <h1>Login to AgriTrade</h1>
+                <form id="login-form">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+
+                    <button type="submit">Login</button>
+                </form>
+                <p id="error-message" class="error-message"></p>
+                <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+        </div>
+        <p>© AgriTrade. All Rights Reserved</p>
+    </footer>
+</body>
+</html>

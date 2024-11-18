@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - AgriTrade</title>
+    <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
+            authDomain: "agritrade-3fe65.firebaseapp.com",
+            projectId: "agritrade-3fe65",
+            storageBucket: "agritrade-3fe65.appspot.com",
+            messagingSenderId: "742671449846",
+            appId: "1:742671449846:web:2bd6f4b4cd0772bee6b6d7",
+            measurementId: "G-5NSK9449FG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('signup-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const fullName = document.getElementById('full-name').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const phoneNumber = document.getElementById('phone-number').value;
+
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+                        const user = userCredential.user;
+                        console.log('Sign up successful:', user);
+
+                        await setDoc(doc(db, 'users', user.uid), {
+                            fullName: fullName,
+                            email: email,
+                            phoneNumber: phoneNumber,
+                            createdAt: new Date().toISOString()
+                        });
+
+                        window.location.href = "/login";  
+                    })
+                    .catch((error) => {
+                        const errorMessage = error.message;
+                        document.getElementById('error-message').textContent = errorMessage;
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+            <span>AGRITRADE</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('welcome') }}">HOME</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">ABOUT US</a></li>
+                <li><a href="{{ url_for('login') }}">LOGIN</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="signup-section">
+            <div class="signup-box">
+                <h1>Sign Up for AgriTrade</h1>
+                <form id="signup-form">
+                    <label for="full-name">Full Name:</label>
+                    <input type="text" id="full-name" required>
+
+                    <!-- Email field -->
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+
+                    <!-- Password field -->
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+
+                    <!-- New Phone Number field -->
+                    <label for="phone-number">Phone Number:</label>
+                    <input type="text" id="phone-number" required>
+
+                    <button type="submit">Sign Up</button>
+                </form>
+                <p id="error-message" class="error-message"></p>
+                <p>Already have an account? <a href="/login">Login here</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+        </div>
+        <p>© AgriTrade. All Rights Reserved</p>
+    </footer>
+</body>
+</html>

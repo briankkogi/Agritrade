@@ -1,0 +1,339 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+.container {
+    width: 60%;
+    height: 10%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+    transition: all 0.3s ease-in-out;
+    margin-top: 100px;
+    margin-left: 320px; /* Increased margin-top to move the entire container down */
+    padding: 20px;    /* Optional padding for inner spacing */
+    }
+
+.container2 {
+    width: 60%;
+    height: 10%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+    transition: all 0.3s ease-in-out;
+    margin-top: 100px; /* Increased margin-top to move the entire container down */
+    padding: 20px;    /* Optional padding for inner spacing */
+    }
+
+.sidebar {
+    width: 250px;
+    background-color: #4CAF50; /* Changed to green */
+    height: calc(100vh - 80px); /* Full height minus the header height */
+    position: fixed;
+    top: 80px; /* Position below the header */
+    left: 0;
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column; /* Ensure sidebar items go top to bottom */
+    transition: width 0.3s ease; /* Smooth transition for width */
+}
+
+.sidebar.minimized {
+    width: 90px; /* Minimized width */
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    width: 90%; /* Make sure the sidebar items take the full width */
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+}
+
+.sidebar ul li {
+    width: 100%; /* Ensure the list item takes full width */
+}
+
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    color: #f9f9f9; /* Keep the text color white */
+    padding: 20px; /* Increase padding for larger clickable area */
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px; /* Increased font size */
+    transition: background-color 0.3s ease, border 0.3s ease; /* Added transition for border */
+    width: 100%; /* Ensure anchor tags take full width */
+}
+
+/* Active and hover states */
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    color: #000; /* Change text color on hover and active */
+    background-color: #f9f9f9; /* Set background color to white for active */
+    border-left: 5px solid #4CAF50; /* Add a left border with the sidebar color */
+}
+
+.sidebar ul li a .icon {
+    font-size: 24px; /* Increase icon size */
+    margin-right: 20px; /* Increase spacing between icon and text */
+}
+
+/* Hide text in minimized sidebar */
+.sidebar.minimized ul li a .text {
+    display: none; /* Hide text when minimized */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px 40px;
+    border-bottom: 1px solid #e0e0e0;
+    position: fixed; /* Make header fixed */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Ensure header is above other content */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 15px;
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+}
+
+nav ul li {
+    margin-left: 30px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    color: #4CAF50;
+}
+
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    text-align: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+}
+
+.confirm-btn {
+    background-color: red;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: grey;
+    color: white;
+}
+
+.profile-icon {
+    width: 100px; /* Adjust size of the icon */
+    height: 100px; /* Adjust size of the icon */
+    border-radius: 0%; /* Make the icon round */
+    cursor: pointer;
+    margin-top: -370px; 
+    transition: transform 0.3s ease;
+}
+.delete-icon {
+    width: 60px; /* Adjust size of the icon */
+    height: 60px; /* Adjust size of the icon */
+    border-radius: 0%; /* Make the icon round */
+    cursor: pointer;
+    margin-left: 700px;
+    margin-top: 280px; 
+    transition: transform 0.3s ease;
+}
+h1 {
+    text-align: center;
+    color: #333;
+
+}
+.profile-form {
+    width: 60%;
+    height: 10%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+    transition: all 0.3s ease-in-out;
+    margin-top: 100px; /* Increased margin-top to move the entire container down */
+    
+    margin-top: 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.profile-form.show {
+    display: block;
+    opacity: 1;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;  
+    padding: 20px;
+}
+.user-details strong {
+    font-size: 1.2em;          /* Increase font size */
+    color: green;              /* Set text color to green */
+}
+.user-details .detail {
+    font-size: 1.1em;          /* Slightly increase font size for the details */
+    margin: 5px 0;             /* Add some space between the lines */
+}
+
+.user-details.hide {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.submit-btn {
+    margin-top: 10px;
+    cursor: pointer;
+}
+.submit-btn:hover {
+    background-color: darkgreen; /* Darker green on hover */
+}
+.show {
+    display: block;
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+.hide {
+    display: none;
+    opacity: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 20px;
+}
+input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+.message {
+    text-align: center;
+    color: green;
+}
+
+
+.submit-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 50%;
+}
+.submit-btn:hover {
+    background-color: #45a049;
+}
+
+.cancel-btn {
+    background-color: red; /* Set button color to red */
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 4px; /* Optional: Add rounded corners */
+}
+
+.cancel-btn:hover {
+    background-color: darkred; /* Darker red when hovering */
+}
+
+footer {
+    position: fixed; /* Fixes the footer to the bottom */
+    bottom: 0; /* Aligns it to the bottom of the viewport */
+    left: 0;
+    background-color: #4CAF50; /* Changed to green */
+    color: #fff; /* Keep the text color white */
+    text-align: center;
+    padding: 20px;
+}
+
+.footer-logo img {
+    width: 80px;
+    margin-bottom: 10px;
+}
+
+footer p {
+    font-size: 14px;
+}
