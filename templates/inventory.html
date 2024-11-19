@@ -8,6 +8,43 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='inventory.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -74,7 +111,6 @@
                             <tr>
                                 <th>Crop Name</th>
                                 <th>Quantity Harvested(KGs)</th>
-                                
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -84,7 +120,60 @@
                     </table>
                 </div>
 
-                <a href="/add_inventory"><button class="submit-btn">Add New Inventory</button></a>
+                <button id="addInventoryBtn" class="submit-btn">Add New Inventory</button>
+
+                <!-- Add/Edit Inventory Modal -->
+                <div id="inventoryModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h2 id="modalTitle">Add New Inventory</h2>
+                        <form id="inventoryForm">
+                            <input type="hidden" id="editItemId">
+                            <div class="form-group">
+                                <label for="cropName">Crop Name:</label>
+                                <input type="text" id="cropName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantity Harvested (KGs):</label>
+                                <input type="number" id="quantity" required min="0" step="0.01">
+                            </div>
+                            <button type="submit" class="submit-btn">Save Inventory</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Sell Modal -->
+                <div id="sellModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h2>Sell Crop</h2>
+                        <form id="sellForm">
+                            <input type="hidden" id="sellItemId">
+                            <div class="form-group">
+                                <label for="currentQuantity">Available Quantity (kg):</label>
+                                <span id="currentQuantity">Loading...</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="crop">CROP:</label>
+                                <span id="crop">Loading...</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantitySold">Quantity Sold (kg):</label>
+                                <input type="number" id="quantitySold" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pricePerKg">Price per Kg:</label>
+                                <input type="number" id="pricePerKg" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sellingDate">Selling Date:</label>
+                                <input type="date" id="sellingDate" required>
+                            </div>
+                            <button type="submit" class="submit-btn" id="submitSellBtn">Sell</button>
+                            <button type="button" class="cancel-btn" id="cancelSellBtn">Cancel</button>
+                        </form>
+                    </div>
+                </div>
 
                 <div id="soldItemsList">
                     <h2>Items sold</h2>
@@ -104,9 +193,6 @@
                         </tbody>
                     </table>
                 </div>
-
-
-                
             </main>
         </div>
     </div>
@@ -151,21 +237,52 @@
                 
                 loadInventory();
                 loadsoldItems();
-                checkForSelectedCrop();  // Define this function if needed
             } else {
                 console.error("No user is signed in.");
                 window.location.href = "/login";
             }
         });
     
-        // Handle form submission
+        // Modal functionality
+        const inventoryModal = document.getElementById('inventoryModal');
+        const sellModal = document.getElementById('sellModal');
+        const addInventoryBtn = document.getElementById('addInventoryBtn');
+        const closeBtns = document.getElementsByClassName('close');
+
+        addInventoryBtn.onclick = function() {
+            document.getElementById('modalTitle').textContent = 'Add New Inventory';
+            document.getElementById('inventoryForm').reset();
+            document.getElementById('editItemId').value = '';
+            inventoryModal.style.display = 'block';
+        }
+
+        Array.from(closeBtns).forEach(btn => {
+            btn.onclick = function() {
+                inventoryModal.style.display = 'none';
+                sellModal.style.display = 'none';
+            }
+        });
+
+        window.onclick = function(event) {
+            if (event.target == inventoryModal) {
+                inventoryModal.style.display = 'none';
+            }
+            if (event.target == sellModal) {
+                sellModal.style.display = 'none';
+            }
+        }
+
+        // Ensure modals are hidden by default
+        inventoryModal.style.display = 'none';
+        sellModal.style.display = 'none';
+
+        // Handle inventory form submission
         document.getElementById('inventoryForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const editItemId = document.getElementById('editItemId').value;
             const cropName = document.getElementById('cropName').value;
-            const quantity = document.getElementById('quantity').value;
-           
+            const quantity = parseFloat(document.getElementById('quantity').value);
     
             try {
                 if (editItemId) {
@@ -173,8 +290,7 @@
                     const docRef = doc(db, "inventory", editItemId);
                     await updateDoc(docRef, {
                         cropName: cropName,
-                        quantity: parseInt(quantity),
-                        harvestDate: harvestDate,   
+                        quantity: quantity,
                         updatedAt: serverTimestamp()
                     });
                     alert("Item updated successfully!");
@@ -183,13 +299,12 @@
                     await addDoc(collection(db, "inventory"), {
                         userId: currentUser.uid,
                         cropName: cropName,
-                        quantity: parseInt(quantity),
-                           
+                        quantity: quantity,
                         updatedAt: serverTimestamp(),
                     });
-                    alert("Inventory updated successfully!");
+                    alert("Inventory added successfully!");
                 }
-                resetForm();
+                inventoryModal.style.display = 'none';
                 loadInventory();
             } catch (error) {
                 console.error("Error updating inventory: ", error);
@@ -197,19 +312,12 @@
             }
         });
     
-        function resetForm() {
-            document.getElementById('inventoryForm').reset();
-            document.getElementById('editItemId').value = '';
-            document.querySelector('.submit-btn').textContent = 'Update Inventory';
-        }
-    
         // Load inventory
-        
         async function loadInventory() {
             const inventoryTableBody = document.getElementById('inventoryTableBody');
             inventoryTableBody.innerHTML = ''; // Clear the table before loading
 
-            const q = query(collection(db, "inventory"), where("userId", "==", currentUser .uid));
+            const q = query(collection(db, "inventory"), where("userId", "==", currentUser.uid));
             const querySnapshot = await getDocs(q);
 
             querySnapshot.forEach((doc) => {
@@ -217,47 +325,33 @@
                 const row = document.createElement('tr');
                 row.dataset.id = doc.id; // Attach document ID to the row
 
-                // Check if the quantity is 0
-                let actionButtons;
-                if (item.quantity === 0) {
-                    actionButtons = 'cleared'; // Display 'cleared' if quantity is 0
-                } else {
-                    actionButtons = `
-                        <button class="action-btn edit-btn" data-id="${doc.id}">Edit</button>
-                        <button class="action-btn delete-btn" data-id="${doc.id}">Delete</button>
-                        <button class="action-btn sell-btn" data-id="${doc.id}">Sell</button>
-                    `;
-                }
+                const actionButtons = `
+                    <button class="action-btn edit-btn" data-id="${doc.id}">Edit</button>
+                    <button class="action-btn delete-btn" data-id="${doc.id}">Delete</button>
+                    <button class="action-btn sell-btn" data-id="${doc.id}">Sell</button>
+                `;
 
                 row.innerHTML = `
                     <td>${item.cropName}</td>
                     <td>${item.quantity}</td>
-                   
                     <td>${actionButtons}</td>
                 `;
                 inventoryTableBody.appendChild(row);
             });
 
-
             // Event delegation for button clicks inside the table body
             inventoryTableBody.addEventListener('click', async (e) => {
-                const row = e.target.closest('tr'); // Get the closest row (tr)
+                const row = e.target.closest('tr');
                 const itemId = row ? row.dataset.id : null;
 
-                if (!itemId) return; // If no item ID, exit
+                if (!itemId) return;
 
                 if (e.target.classList.contains('edit-btn')) {
-                    // Edit button clicked
-                    console.log('Edit button clicked for item ID:', itemId);
-                    editItem(itemId); // Trigger edit functionality
+                    editItem(itemId);
                 } else if (e.target.classList.contains('delete-btn')) {
-                    // Delete button clicked
-                    console.log('Delete button clicked for item ID:', itemId);
-                    deleteItem(itemId); // Trigger delete functionality
+                    deleteItem(itemId);
                 } else if (e.target.classList.contains('sell-btn')) {
-                    // Sell button clicked
-                    console.log('Sell button clicked for item ID:', itemId);
-                    sellItem(itemId); // Trigger sell functionality
+                    openSellModal(itemId);
                 }
             });
         }
@@ -280,63 +374,177 @@
                     <td>${item.pricePerKg}</td>
                     <td>${item.totalAmount}</td>
                     <td>${item.sellingDate}</td>
-                    
                 `;
-                solditems.appendChild(row);
-            });}
+                inventoryTableBody.appendChild(row);
+            });
+        }
     
         // Edit item function
         async function editItem(itemId) {
-    
             console.log('Editing item with ID:', itemId);
             
-            // You could fetch the current item data from Firestore
             const docRef = doc(db, "inventory", itemId);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const item = docSnap.data();
-                // You can now pre-fill the form with the item's current details
-                console.log('Item details:', item);
+                document.getElementById('modalTitle').textContent = 'Edit Inventory';
+                document.getElementById('editItemId').value = itemId;
+                document.getElementById('cropName').value = item.cropName;
+                document.getElementById('quantity').value = item.quantity;
+                inventoryModal.style.display = 'block';
             } else {
                 console.log("No such document!");
             }
         }
 
-    // Delete function
+        // Delete function
         async function deleteItem(itemId) {
-    
             const isConfirmed = window.confirm("Are you sure you want to delete this item?");
 
-            // If the user clicks "Cancel", we return early to avoid the deletion
             if (!isConfirmed) {
                 console.log("Item deletion cancelled");
                 return;
             }
 
-            // Proceed with deletion if the user clicks "OK"
             console.log('Deleting item with ID:', itemId);
             
             const docRef = doc(db, "inventory", itemId);
             await deleteDoc(docRef)
                 .then(() => {
                     console.log("Item deleted successfully");
-                    // Optionally reload the inventory after deletion
                     loadInventory();
                 })
                 .catch((error) => {
                     console.error("Error deleting document: ", error);
                 });
         }
-
     
-        // Sell item function
-        async function sellItem(itemId) {
-           
-            console.log('Selling item with ID:', itemId);
+        // Open sell modal function
+        async function openSellModal(itemId) {
+            console.log('Opening sell modal for item with ID:', itemId);
+            
+            const docRef = doc(db, "inventory", itemId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const item = docSnap.data();
+                document.getElementById('sellItemId').value = itemId;
+                document.getElementById('currentQuantity').textContent = item.quantity;
+                document.getElementById('crop').textContent = item.cropName;
+                document.getElementById('quantitySold').value = '';
+                document.getElementById('pricePerKg').value = '';
+                document.getElementById('sellingDate').value = '';
+                sellModal.style.display = 'block';
 
-            window.location.href = `/selling?itemId=${itemId}`;
+                // Set up validation for quantity sold
+                const quantitySoldInput = document.getElementById('quantitySold');
+                quantitySoldInput.max = item.quantity;
+                quantitySoldInput.addEventListener('input', () => {
+                    const enteredQuantity = parseFloat(quantitySoldInput.value);
+                    if (enteredQuantity > item.quantity) {
+                        quantitySoldInput.setCustomValidity(`You cannot sell more than ${item.quantity} kg.`);
+                    } else if (enteredQuantity < 0) {
+                        quantitySoldInput.setCustomValidity("Quantity sold cannot be less than 0.");
+                    } else {
+                        quantitySoldInput.setCustomValidity('');
+                    }
+                });
+
+                // Set up validation for price per kg
+                const pricePerKgInput = document.getElementById('pricePerKg');
+                pricePerKgInput.addEventListener('input', () => {
+                    const enteredPrice = parseFloat(pricePerKgInput.value);
+                    if (enteredPrice < 0) {
+                        pricePerKgInput.setCustomValidity("Price per kg cannot be less than 0.");
+                    } else {
+                        pricePerKgInput.setCustomValidity('');
+                    }
+                });
+
+                // Set minimum date for selling date
+                const sellingDateInput = document.getElementById('sellingDate');
+                const today = new Date().toISOString().split('T')[0];
+                sellingDateInput.min = today;
+            } else {
+                console.log("No such document!");
+            }
         }
 
+        // Handle sell form submission
+        document.getElementById('sellForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const itemId = document.getElementById('sellItemId').value;
+            const quantitySold = parseFloat(document.getElementById('quantitySold').value);
+            const pricePerKg = parseFloat(document.getElementById('pricePerKg').value);
+            const sellingDate = document.getElementById('sellingDate').value;
+
+            // Validate the form inputs
+            if (isNaN(quantitySold) || isNaN(pricePerKg) || !sellingDate) {
+                alert('Please fill in all the fields correctly.');
+                return;
+            }
+
+            // Calculate the total amount
+            const totalAmount = quantitySold * pricePerKg;
+
+            // Fetch the item reference to update quantity
+            const itemRef = doc(db, "inventory", itemId);
+            const itemSnapshot = await getDoc(itemRef);
+
+            if (itemSnapshot.exists()) {
+                const itemData = itemSnapshot.data();
+                const availableQuantity = itemData.quantity;
+                const cropName = itemData.cropName;
+
+                if (quantitySold > availableQuantity) {
+                    alert(`Cannot sell more than available quantity: ${availableQuantity} kg.`);
+                    return;
+                }
+
+                // Prepare the data to be saved in the 'itemsSold' collection
+                const soldData = {
+                    userId: currentUser.uid,
+                    itemId: itemId,
+                    cropName: cropName,
+                    quantitySold: quantitySold,
+                    pricePerKg: pricePerKg,
+                    sellingDate: sellingDate,
+                    totalAmount: totalAmount,
+                    timestamp: serverTimestamp(),
+                };
+
+                try {
+                    // Save the data to the Firestore 'itemsSold' collection
+                    await addDoc(collection(db, "itemsSold"), soldData);
+
+                    // Update the available quantity or remove the item if all is sold
+                    const newQuantity = availableQuantity - quantitySold;
+                    if (newQuantity > 0) {
+                        await updateDoc(itemRef, { quantity: newQuantity });
+                    } else {
+                        await deleteDoc(itemRef);
+                    }
+
+                    alert('Item sold successfully!');
+
+                    // Close the modal and refresh the inventory
+                    sellModal.style.display = 'none';
+                    loadInventory();
+                    loadsoldItems();
+
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    alert('There was an error while processing your request. Please try again.');
+                }
+            } else {
+                alert('Item not found in inventory.');
+            }
+        });
+
+        // Cancel sell button
+        document.getElementById('cancelSellBtn').addEventListener('click', () => {
+            sellModal.style.display = 'none';
+        });
     
         // Sidebar toggle functionality
         const sidebar = document.getElementById('sidebar');
@@ -358,13 +566,6 @@
         sidebar.addEventListener('mouseleave', () => {
             if (!isSidebarMinimized) toggleSidebar();
         });
-    
-        // Placeholder function for 'checkForSelectedCrop'
-        function checkForSelectedCrop() {
-            console.log('checkForSelectedCrop called');
-            // Add your logic here if needed
-        }
     </script>
-    
 </body>
 </html>

@@ -260,14 +260,28 @@
         }
         // Harvest crop
         window.harvestCrop = async function(id) {
-            if (confirm("Are you sure you want to mark this crop as harvested?")) {
-                const docRef = doc(db, "crops", id);
-                await updateDoc(docRef, {
-                    status: 'Harvested',
-                    harvestDate: new Date().toISOString().split('T')[0]
+            const docRef = doc(db, "crops", id);
+            const cropDoc = await getDoc(docRef);
+            
+            if (cropDoc.exists()) {
+                const cropData = cropDoc.data();
+                
+                // Add to inventory
+                await addDoc(collection(db, "inventory"), {
+                    userId: currentUser.uid,
+                    cropName: cropData.name,
+                    quantity: cropData.quantity,
+                    updatedAt: serverTimestamp(),
                 });
-                alert("Crop marked as harvested!");
+
+                // Delete from crops
+                await deleteDoc(docRef);
+
+                alert("Crop harvested and added to inventory!");
                 loadCrops();
+            } else {
+                console.log("No such document!");
+                alert("Error: Crop not found");
             }
         }
 

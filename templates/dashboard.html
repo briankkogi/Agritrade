@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
     <header>
         
     </header>
@@ -68,9 +67,7 @@
                         <h3>CROP</h3>
                         <img src="{{ url_for('static', filename='agriculture.png') }}" id="crop-image">
                         <select id="crop-select">
-                           
                             <option value="" disabled selected>Loading...</option>
-                            
                         </select>
                     </div>
                     
@@ -85,14 +82,14 @@
                     <div class="chart-container">
                         <h2>Financial Statistics</h2>
                         <div class="stats-header">
-                            <div class="current-month">
+                            <!--<div class="current-month">
                                 <span>Current Month</span>
                                 <strong id="current-month">Loading...</strong>
                             </div>
                             <div class="monthly-earnings">
                                 <span>Month's Earnings</span>
                                 <strong id="monthly-earnings">Loading...</strong>
-                            </div>
+                            </div>-->
                         </div>
                         <canvas id="financial-chart"></canvas>
                     </div>
@@ -102,8 +99,6 @@
                         <canvas id="sales-chart"></canvas>
                     </div>
                 </section>
-
-               
             </main>
         </div>
     </div>
@@ -121,7 +116,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-        import { Timestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
@@ -138,26 +132,21 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-
         document.addEventListener('DOMContentLoaded', () => {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    console.log(user.email)
+                    console.log(user.email);
                     const userId = user.uid;
                     document.getElementById('user-info').textContent = user.email;
                     displayUserName(user.email);
-                    fetchInventoryData();
                     calculateMonthlyEarnings(userId);
-                    
-                    // Pass userId to fetchCrops
                     fetchCrops(userId);
+                    initializeCharts(userId);
                 } else {
-                    // Redirect to login if not authenticated
                     window.location.href = "/login";
                 }
             });
 
-            // Handle logout click event safely
             const dropdownLink = document.querySelector('.dropdown-content a');
             if (dropdownLink) {
                 dropdownLink.addEventListener('click', (event) => {
@@ -169,35 +158,31 @@
             }
         });
 
-        
-
         async function calculateMonthlyEarnings(userId) {
             const monthlyEarningsElement = document.getElementById('monthly-earnings');
             try {
-                // Check if userId and startOfMonth are valid
                 if (!userId) {
                     console.error("User ID is required.");
                     return;
                 }
 
-                const transactionsRef = collection(db, "inventory");
-                const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+                const startOfMonth = new Date();
+                startOfMonth.setDate(1);
+                startOfMonth.setHours(0, 0, 0, 0);
 
-                // Query for a specific user (without the "updatedAt" filter for now)
                 const q = query(
-                    transactionsRef,
-                    where("userId", "==", userId)
+                    collection(db, "itemsSold"),
+                    where("userId", "==", userId),
+                    where("sellingDate", ">=", startOfMonth)
                 );
 
                 const querySnapshot = await getDocs(q);
                 let totalEarnings = 0;
 
-                // Filter and sort the results manually in JavaScript
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    const updatedAt = data.updatedAt ? data.updatedAt.toDate() : null;
-                    if (updatedAt && updatedAt >= startOfMonth && typeof data.price === 'number') {
-                        totalEarnings += data.price;
+                    if (typeof data.totalAmount === 'number') {
+                        totalEarnings += data.totalAmount;
                     }
                 });
 
@@ -208,11 +193,7 @@
             }
         }
 
-
-
-        
-
-        const displayUserName = async (userEmail) => {
+        async function displayUserName(userEmail) {
             const userInfoElement = document.getElementById('user-info');
             const usersRef = collection(db, "users");
             const q = query(usersRef, where("email", "==", userEmail));
@@ -221,60 +202,37 @@
             if (!querySnapshot.empty) {
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    if (userData.username) {
-                        userInfoElement.textContent = userData.username;
-                    } else {
-                        userInfoElement.textContent = "User";
-                    }
+                    userInfoElement.textContent = userData.username || "User";
                 });
             } else {
                 console.error("No user data found in Firestore.");
             }
-        };
-
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const userEmail = user.email;
-                displayUserName(userEmail);
-                fetchInventoryData(); 
-            } else {
-                console.error("No user is signed in.");
-                window.location.href = "/login"; 
-            }
-        });
-
-       
+        }
 
         async function fetchCrops(userId) {
             const cropSelect = document.getElementById('crop-select');
             cropSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
 
             try {
-                // Reference to the 'inventory' collection filtered by userId
-                const inventoryRef = collection(db, "inventory");
-
-                // First, query by userId (without ordering)
-                const userQuery = query(inventoryRef, where("userId", "==", userId));
+                const itemsSoldRef = collection(db, "itemsSold");
+                const userQuery = query(itemsSoldRef, where("userId", "==", userId));
                 const userQuerySnapshot = await getDocs(userQuery);
 
                 if (userQuerySnapshot.empty) {
                     cropSelect.innerHTML = '<option value="" disabled>No crops found</option>';
                 } else {
-                    // Then, sort the results manually in JavaScript
-                    const crops = [];
+                    const crops = new Set();
                     userQuerySnapshot.forEach((doc) => {
                         const data = doc.data();
                         if (data.cropName) {
-                            crops.push(data.cropName);
+                            crops.add(data.cropName);
                         }
                     });
 
-                    // Sort crops manually instead of in the query
-                    crops.sort();
+                    const sortedCrops = Array.from(crops).sort();
 
-                    // Add sorted crops to the dropdown
-                    crops.forEach(crop => {
+                    cropSelect.innerHTML = '<option value="">All Crops</option>';
+                    sortedCrops.forEach(crop => {
                         const option = document.createElement('option');
                         option.value = crop;
                         option.textContent = crop;
@@ -287,171 +245,139 @@
             }
         }
 
+        let financialChart, salesChart;
 
-
-    
-
-        const signOutButton = document.querySelector('.dropdown-content a');
-        signOutButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            signOut(auth).then(() => {
-                console.log("User signed out.");
-                window.location.href = "/logout";
-            }).catch((error) => {
-                console.error("Sign out error:", error);
-            });
-        });
-
-
-        // Fetch and display inventory data
-        async function fetchInventoryData() {
-            const inventoryRef = collection(db, "inventory");
-            const q = query(inventoryRef, orderBy("updatedAt", "desc"), limit(5));
-            const querySnapshot = await getDocs(q);
-            
-            const inventoryList = document.getElementById('inventory-list');
-            inventoryList.innerHTML = ''; // Clear existing content
-
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const listItem = document.createElement('li');
-                listItem.textContent = `${data.cropName}: ${data.quantity} KG (${data.status})`;
-                inventoryList.appendChild(listItem);
-            });
-        }
-
-        // Call fetchInventoryData when the page loads
-        document.addEventListener('DOMContentLoaded', fetchInventoryData);
-    </script>
-
-<script>
-    // Set the current month dynamically
-    const currentMonthElement = document.getElementById('current-month');
-    const currentDate = new Date();
-    const monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-    currentMonthElement.textContent = monthNames[currentDate.getMonth()];
-</script>
-
-<script>
-    // Financial Statistics Chart
-    const financialCtx = document.getElementById('financial-chart').getContext('2d');
-    const financialChart = new Chart(financialCtx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-                label: 'Monthly Earnings (Ksh)',
-                data: [], // Empty array for now, will be populated with data from Firestore
-                borderColor: '#4CAF50',
-                tension: 0.1,
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value, index, values) {
-                            return value.toLocaleString() + ' Ksh';
+        function initializeCharts(userId) {
+            const financialCtx = document.getElementById('financial-chart').getContext('2d');
+            financialChart = new Chart(financialCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Monthly Earnings (Ksh)',
+                        data: [],
+                        borderColor: '#4CAF50',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' Ksh';
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
-    });
+            });
 
-    // Amounts Sold Chart
-    const salesCtx = document.getElementById('sales-chart').getContext('2d');
-    const salesChart = new Chart(salesCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-                label: 'Amount Sold (KGs)',
-                data: [], // Empty array for now, will be populated with data from Firestore
-                backgroundColor: '#4CAF50'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value, index, values) {
-                            return value + ' KG';
+            const salesCtx = document.getElementById('sales-chart').getContext('2d');
+            salesChart = new Chart(salesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Amount Sold (KGs)',
+                        data: [],
+                        backgroundColor: '#4CAF50'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' KG';
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
-    });
+            });
 
-    // Fetch data from Firestore and update charts
-    async function fetchChartData(userId) {
-        try {
-            const earningsData = [];
-            const salesData = [];
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            
-            // Loop through each month and get data from Firestore for that month
-            for (let i = 0; i < 12; i++) {
-                const month = months[i];
-                const startOfMonth = new Date(2024, i, 1); // Start of the month
-                const endOfMonth = new Date(2024, i + 1, 0); // End of the month
+            fetchChartData(userId);
+        }
+
+        async function fetchChartData(userId) {
+            try {
+                const earningsData = new Array(12).fill(0);
+                const salesData = new Array(12).fill(0);
                 
-                // Query Firestore for data in the specific month (using timestamp range)
-                const inventorySnapshot = await getDocs(query(
-                    collection(db, 'inventory'), 
-                    where("userId", "==", userId),
-                    where("harvestDate", ">=", startOfMonth),
-                    where("harvestDate", "<=", endOfMonth)
-                ));
-                
-                let totalEarningsForMonth = 0;
-                let totalQuantityForMonth = 0;
-                
-                inventorySnapshot.forEach(doc => {
+                const itemsSoldRef = collection(db, 'itemsSold');
+                const q = query(itemsSoldRef, where("userId", "==", userId));
+                const querySnapshot = await getDocs(q);
+
+                querySnapshot.forEach(doc => {
                     const data = doc.data();
-                    totalEarningsForMonth += data.amount; // Sum of earnings for the month
-                    totalQuantityForMonth += data.quantity; // Sum of quantity sold for the month
+                    const date = new Date(data.sellingDate);
+                    const month = date.getMonth();
+                    
+                    earningsData[month] += data.totalAmount || 0;
+                    salesData[month] += data.quantitySold || 0;
                 });
 
-                // Push the data for each month
-                earningsData.push(totalEarningsForMonth);
-                salesData.push(totalQuantityForMonth);
+                financialChart.data.datasets[0].data = earningsData;
+                salesChart.data.datasets[0].data = salesData;
+
+                financialChart.update();
+                salesChart.update();
+
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
             }
-
-            // Update the charts with the fetched data
-            financialChart.data.datasets[0].data = earningsData;
-            salesChart.data.datasets[0].data = salesData;
-
-            financialChart.update();
-            salesChart.update();
-
-        } catch (error) {
-            console.error('Error fetching chart data:', error);
         }
-    }
 
-    // Fetch data for the selected user and update the charts when the page loads
-    const userId = 'your-user-id-here'; // Replace with the actual user ID
-    fetchChartData(userId);
+        document.getElementById('crop-select').addEventListener('change', function() {
+            const selectedCrop = this.value;
+            updateCharts(auth.currentUser.uid, selectedCrop);
+        });
 
-    // Event listeners for crop and area selects (if needed to update data based on selection)
-    document.getElementById('crop-select').addEventListener('change', updateCharts);
-    document.getElementById('area-select').addEventListener('change', updateCharts);
+        async function updateCharts(userId, selectedCrop) {
+            try {
+                const earningsData = new Array(12).fill(0);
+                const salesData = new Array(12).fill(0);
+                
+                const itemsSoldRef = collection(db, 'itemsSold');
+                let q = query(itemsSoldRef, where("userId", "==", userId));
+                
+                if (selectedCrop) {
+                    q = query(q, where("cropName", "==", selectedCrop));
+                }
 
-    function updateCharts() {
-        // Trigger the chart data update based on the selected crop and area (for now, we'll fetch new data dynamically)
-        fetchChartData(userId); // Re-fetch the data based on the new selection (if applicable)
-    }
-</script>
+                const querySnapshot = await getDocs(q);
 
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const date = new Date(data.sellingDate);
+                    const month = date.getMonth();
+                    
+                    earningsData[month] += data.totalAmount || 0;
+                    salesData[month] += data.quantitySold || 0;
+                });
+
+                financialChart.data.datasets[0].data = earningsData;
+                salesChart.data.datasets[0].data = salesData;
+
+                financialChart.update();
+                salesChart.update();
+
+            } catch (error) {
+                console.error('Error updating chart data:', error);
+            }
+        }
+
+        // Set the current month dynamically
+        const currentMonthElement = document.getElementById('current-month');
+        const currentDate = new Date();
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        currentMonthElement.textContent = monthNames[currentDate.getMonth()];
+    </script>
 </body>
 </html>
