@@ -316,7 +316,7 @@ def crop_details(crop_name):
         conditions = crop_optimal_conditions[crop_name]
         crop_info = {
             'crop_name': crop_name,
-            'recommendation_reason': f"Based on the soil and weather conditions, {crop_name} is well-suited for cultivation in your area.",
+            'recommendation_reason': f"Based on the weather conditions, {crop_name} is well-suited for cultivation in your area.",
             'optimal_temperature': f"{conditions['temperature']['min']}°C - {conditions['temperature']['max']}°C",
             'optimal_humidity': f"{conditions['humidity']['min']}% - {conditions['humidity']['max']}%",
             'optimal_rainfall': f"{conditions['rainfall']['min']}mm - {conditions['rainfall']['max']}mm annually",
