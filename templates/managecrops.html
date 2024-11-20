@@ -8,6 +8,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='manage_crops.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
+    <style>
+        .confirmation-message {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .harvested-status {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -223,13 +241,12 @@
                 querySnapshot.forEach((doc) => {
                     const crop = doc.data();
                     const row = `
-                        <tr>
+                        <tr data-crop-id="${doc.id}">
                             <td>${crop.name}</td>
                             <td>${crop.quantity}</td>
                             <td>${crop.status || 'Planted'}</td>
                             <td>
-                                <button onclick="editCrop('${doc.id}')" class="action-btn">Edit</button>
-                                ${crop.status !== 'Harvested' ? `<button onclick="harvestCrop('${doc.id}')" class="action-btn harvest-btn">Harvest</button>` : ''}
+                                ${crop.status !== 'Harvested' ? `<button onclick="harvestCrop('${doc.id}')" class="action-btn harvest-btn">Harvest</button>` : `<span class="harvested-status">Harvested</span>`}
                                 <button onclick="deleteCrop('${doc.id}')" class="action-btn delete-btn">Delete</button>
                             </td>
                         </tr>
@@ -274,11 +291,27 @@
                     updatedAt: serverTimestamp(),
                 });
 
-                // Delete from crops
-                await deleteDoc(docRef);
+                // Update crop status to 'Harvested'
+                await updateDoc(docRef, {
+                    status: 'Harvested',
+                    harvestedAt: serverTimestamp()
+                });
 
-                alert("Crop harvested and added to inventory!");
-                loadCrops();
+                // Update the crop row to show the new status and confirmation message
+                const cropRow = document.querySelector(`tr[data-crop-id="${id}"]`);
+                if (cropRow) {
+                    cropRow.querySelector('td:nth-child(3)').textContent = 'Harvested';
+                    cropRow.querySelector('td:nth-child(4)').innerHTML = `
+                        <span class="confirmation-message">Added to inventory</span>
+                    `;
+                    
+                    // Remove the confirmation message after 5 seconds
+                    setTimeout(() => {
+                        cropRow.querySelector('td:nth-child(4)').innerHTML = '';
+                    }, 5000);
+                }
+
+                loadCrops(); // Refresh the crop list
             } else {
                 console.log("No such document!");
                 alert("Error: Crop not found");
