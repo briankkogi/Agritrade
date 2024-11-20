@@ -7,10 +7,27 @@
     <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css"> <!-- Boxicons CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Function to get the user's location using Geolocation API
+        // Function to fetch Kenyan counties
+        async function fetchKenyanCounties() {
+            try {
+                const response = await fetch('/get_kenyan_counties');
+                const counties = await response.json();
+                const dropdown = document.getElementById('kenyan-counties');
+                counties.forEach(county => {
+                    const option = document.createElement('option');
+                    option.value = JSON.stringify(county);
+                    option.textContent = county.name;
+                    dropdown.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching Kenyan counties:', error);
+            }
+        }
+
+        // Function to get the user's location
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -23,8 +40,17 @@
         function showPosition(position) {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
+            fetchWeatherData(latitude, longitude);
+        }
 
-            // Fetch weather data using the retrieved latitude and longitude
+        // Function to handle county selection
+        function handleCountySelection() {
+            const selectedCounty = JSON.parse(document.getElementById('kenyan-counties').value);
+            fetchWeatherData(selectedCounty.lat, selectedCounty.lon);
+        }
+
+        // Function to fetch weather data
+        function fetchWeatherData(latitude, longitude) {
             fetch('/get_weather', {
                 method: 'POST',
                 headers: {
@@ -63,6 +89,9 @@
                     if (!document.getElementById('user-rainfall').value) {
                         document.getElementById('user-rainfall').value = data.rainfall;
                     }
+
+                    // Fetch forecast after getting weather data
+                    fetchForecast(latitude, longitude);
                 }
             })
             .catch(error => {
@@ -89,10 +118,7 @@
         }
 
         // Function to fetch and display the 5-day forecast
-        function fetchForecast() {
-            const latitude = 0;  // Replace with actual latitude
-            const longitude = 0; // Replace with actual longitude
-
+        function fetchForecast(latitude, longitude) {
             fetch('/get_forecast', {
                 method: 'POST',
                 headers: {
@@ -177,13 +203,13 @@
 
         // Automatically get the location and forecast when the page loads
         window.onload = function() {
+            fetchKenyanCounties();
             getLocation();
-            fetchForecast();
         };
     </script>
 </head>
 <body>
-    <div class="main-container"> <!-- Updated container class -->
+    <div class="main-container">
         <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
             <ul>
@@ -195,7 +221,7 @@
         </nav>
 
         <!-- Main content area -->
-        <div class="content-area"> <!-- Updated container class -->
+        <div class="content-area">
             <!-- Header -->
             <header>
                 <div class="logo">
@@ -204,8 +230,6 @@
                 </div>
                 <nav>
                     <ul>
-                        <!--<li><a href="/dashboard">DASHBOARD</a></li>
-                        <li><a href="/home" class="active">PREDICTION</a></li>-->
                         <li>
                             <div class="dropdown">
                                 <span id="user-info">User</span>
@@ -219,7 +243,7 @@
             </header>
 
             <main>
-                <div class="prediction-container"> <!-- Updated container class -->
+                <div class="prediction-container">
                     <!-- Forecast Widget -->
                     <section id="forecast-widget">
                         <h2>5-Day Forecast</h2>
@@ -231,14 +255,20 @@
 
                     <div class="right-section">
                         <!-- Weather Information Section -->
-                        <section id="weather-info">
-                            <h3>Current Weather Information</h3>
-                            <p id="location">Location: </p>
-                            <p id="temperature">Temperature: </p>
-                            <p id="humidity">Humidity: </p>
-                            <p id="rainfall">Rainfall: </p>
-                        </section>
-
+                <section id="weather-info">
+    <div class="weather-header">
+        <h3>Current Weather Information</h3>
+        <div class="location-selector">
+            <select id="kenyan-counties" onchange="handleCountySelection()">
+                <option value="">Select a county</option>
+            </select>
+        </div>
+    </div>
+    <p id="location">Location: </p>
+    <p id="temperature">Temperature: </p>
+    <p id="humidity">Humidity: </p>
+    <p id="rainfall">Rainfall: </p>
+</section>
                         <!-- Form for Crop Prediction -->
                         <section id="prediction-form">
                             <h3>Crop Prediction Form</h3>
@@ -260,8 +290,6 @@
                                 <label for="user-rainfall">Rainfall (mm):</label>
                                 <input type="number" step="0.01" id="user-rainfall" name="user_rainfall" required>
                                 <input type="submit" class="predict-button" value="Predict">
-
-
                             </form>
                         </section>
                     </div>
@@ -342,21 +370,20 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('main'); // Select the main content area
-            let isSidebarMinimized = true; // Initial state of the sidebar
+            const mainContent = document.querySelector('main');
+            let isSidebarMinimized = true;
     
             const toggleSidebar = () => {
                 if (isSidebarMinimized) {
                     sidebar.classList.remove('minimized');
-                    mainContent.style.marginLeft = '270px'; // Adjust margin for expanded sidebar
+                    mainContent.style.marginLeft = '270px';
                 } else {
                     sidebar.classList.add('minimized');
-                    mainContent.style.marginLeft = '90px'; // Adjust margin for minimized sidebar
+                    mainContent.style.marginLeft = '90px';
                 }
                 isSidebarMinimized = !isSidebarMinimized;
             };
     
-            // Listen for mouse events to toggle the sidebar
             sidebar.addEventListener('mouseover', () => {
                 if (isSidebarMinimized) toggleSidebar();
             });
@@ -366,6 +393,5 @@
             });
         });
     </script>
-    
 </body>
 </html>

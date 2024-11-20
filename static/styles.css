@@ -291,7 +291,57 @@ input[type="submit"] {
 input[type="submit"].predict-button:hover {
     background-color: #45a049;
 }
+#weather-info {
+    position: relative;
+    padding-top: 40px; /* Adjust this value as needed */
+}
 
+.weather-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.weather-header h3 {
+    margin: 0;
+}
+
+.location-selector {
+    margin-left: auto; /* Push to the right */
+}
+
+.location-selector select {
+    padding: 8px 12px;
+    border: 1px solid white;
+    border-radius: 4px;
+    background-color: white;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.location-selector select:hover {
+    border-color: #45a049;
+}
+
+.location-selector select:focus {
+    outline: none;
+    border-color: #45a049;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+#weather-info p {
+    margin: 10px 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: #333;
+}
 /* Footer styling */
 footer {
     margin-top: 50px;

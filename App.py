@@ -193,85 +193,6 @@ def logout():
     logging.debug("User logged out")
     return redirect(url_for('login'))
 
-# Route to fetch weather data from OpenWeather API
-@app.route('/get_weather', methods=['POST'])
-def get_weather():
-    try:
-        lat = request.json['latitude']
-        lon = request.json['longitude']
-
-        weather_url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
-
-        start_time = time.time()
-        weather_response = requests.get(weather_url, timeout=5)
-        response_time = time.time() - start_time
-        logging.debug(f"OpenWeather API response time: {response_time:.2f} seconds")
-
-        if weather_response.status_code != 200:
-            logging.error(f"API Error {weather_response.status_code}: {weather_response.text}")
-            return jsonify({'error': 'Failed to fetch weather data'}), 500
-
-        weather_data = weather_response.json()
-        temperature = weather_data['main']['temp']
-        humidity = weather_data['main']['humidity']
-        rainfall = weather_data.get('rain', {}).get('1h', 0.0)
-        location = weather_data['name']
-
-        return jsonify({
-            'location': location,
-            'temperature': temperature,
-            'humidity': humidity,
-            'rainfall': rainfall
-        })
-
-    except Exception as e:
-        logging.error(f"Error fetching weather data: {e}")
-        return jsonify({'error': str(e)})
-
-# Route to fetch 5-day weather forecast from OpenWeather API
-@app.route('/get_forecast', methods=['POST'])
-def get_forecast():
-    try:
-        lat = request.json['latitude']
-        lon = request.json['longitude']
-
-        forecast_url = f"http://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
-
-        forecast_response = requests.get(forecast_url, timeout=5)
-
-        if forecast_response.status_code != 200:
-            logging.error(f"API Error {forecast_response.status_code}: {forecast_response.text}")
-            return jsonify({'error': 'Failed to fetch forecast data'}), 500
-
-        forecast_data = forecast_response.json()
-
-        forecast_list = []
-        added_dates = set()
-        for entry in forecast_data['list']:
-            date_time = entry['dt_txt']
-            date = date_time.split(' ')[0]
-            time_of_day = date_time.split(' ')[1]
-
-            if time_of_day == '12:00:00' and date not in added_dates:
-                forecast_list.append({
-                    'date': date,
-                    'temperature': entry['main']['temp'],
-                    'humidity': entry['main']['humidity'],
-                    'rainfall': entry.get('rain', {}).get('3h', 0.0)
-                })
-                added_dates.add(date)
-
-            if len(forecast_list) == 5:
-                break
-
-        return jsonify({
-            'forecast': forecast_list
-        })
-
-    except Exception as e:
-        logging.error(f"Error fetching forecast data: {e}")
-        return jsonify({'error': str(e)})
-
 # Route for crop prediction based on weather data
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -356,6 +277,104 @@ def crop_details(crop_name):
         }
 
     return render_template('cropdetails.html', **crop_info)
+
+
+# New route to get Kenyan counties
+@app.route('/get_kenyan_counties')
+def get_kenyan_counties():
+    kenyan_counties = [
+        {"name": "Nairobi", "lat": -1.2921, "lon": 36.8219},
+        {"name": "Mombasa", "lat": -4.0435, "lon": 39.6682},
+        {"name": "Kisumu", "lat": -0.1022, "lon": 34.7617},
+        {"name": "Nakuru", "lat": -0.3031, "lon": 36.0800},
+        {"name": "Eldoret", "lat": 0.5143, "lon": 35.2698},
+        {"name": "Kiambu", "lat": -1.1748, "lon": 36.8304},
+        {"name": "Machakos", "lat": -1.5177, "lon": 37.2634},
+        {"name": "Kisii", "lat": -0.6817, "lon": 34.7717},
+        {"name": "Nyeri", "lat": -0.4169, "lon": 36.9511},
+        {"name": "Kakamega", "lat": 0.2827, "lon": 34.7519},
+        # Add more Kenyan counties as needed
+    ]
+    return jsonify(kenyan_counties)
+
+# Updated route to fetch weather data from OpenWeather API
+@app.route('/get_weather', methods=['POST'])
+def get_weather():
+    try:
+        lat = request.json['latitude']
+        lon = request.json['longitude']
+
+        weather_url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+
+        start_time = time.time()
+        weather_response = requests.get(weather_url, timeout=5)
+        response_time = time.time() - start_time
+        logging.debug(f"OpenWeather API response time: {response_time:.2f} seconds")
+
+        if weather_response.status_code != 200:
+            logging.error(f"API Error {weather_response.status_code}: {weather_response.text}")
+            return jsonify({'error': 'Failed to fetch weather data'}), 500
+
+        weather_data = weather_response.json()
+        temperature = weather_data['main']['temp']
+        humidity = weather_data['main']['humidity']
+        rainfall = weather_data.get('rain', {}).get('1h', 0.0)
+        location = weather_data['name']
+
+        return jsonify({
+            'location': location,
+            'temperature': temperature,
+            'humidity': humidity,
+            'rainfall': rainfall
+        })
+
+    except Exception as e:
+        logging.error(f"Error fetching weather data: {e}")
+        return jsonify({'error': str(e)})
+
+# Updated route to fetch 5-day weather forecast from OpenWeather API
+@app.route('/get_forecast', methods=['POST'])
+def get_forecast():
+    try:
+        lat = request.json['latitude']
+        lon = request.json['longitude']
+
+        forecast_url = f"http://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+
+        forecast_response = requests.get(forecast_url, timeout=5)
+
+        if forecast_response.status_code != 200:
+            logging.error(f"API Error {forecast_response.status_code}: {forecast_response.text}")
+            return jsonify({'error': 'Failed to fetch forecast data'}), 500
+
+        forecast_data = forecast_response.json()
+
+        forecast_list = []
+        added_dates = set()
+        for entry in forecast_data['list']:
+            date_time = entry['dt_txt']
+            date = date_time.split(' ')[0]
+            time_of_day = date_time.split(' ')[1]
+
+            if time_of_day == '12:00:00' and date not in added_dates:
+                forecast_list.append({
+                    'date': date,
+                    'temperature': entry['main']['temp'],
+                    'humidity': entry['main']['humidity'],
+                    'rainfall': entry.get('rain', {}).get('3h', 0.0)
+                })
+                added_dates.add(date)
+
+            if len(forecast_list) == 5:
+                break
+
+        return jsonify({
+            'forecast': forecast_list
+        })
+
+    except Exception as e:
+        logging.error(f"Error fetching forecast data: {e}")
+        return jsonify({'error': str(e)})
 
 # Flask app entry point
 if __name__ == '__main__':
