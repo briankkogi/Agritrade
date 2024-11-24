@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Function to fetch Kenyan counties
         async function fetchKenyanCounties() {
@@ -67,28 +66,15 @@
                     alert('Error fetching weather: ' + data.error);
                 } else {
                     // Update the weather information displayed on the page
-                    document.getElementById('location').innerHTML = 'Location: ' + data.location;
-                    document.getElementById('temperature').innerHTML = 'Temperature: ' + data.temperature + ' °C';
-                    document.getElementById('humidity').innerHTML = 'Humidity: ' + data.humidity + ' %';
-                    document.getElementById('rainfall').innerHTML = 'Rainfall: ' + data.rainfall + ' mm (last hour)';
+                    document.getElementById('location').textContent = 'Location: ' + data.location;
+                    document.getElementById('temperature').textContent = 'Temperature: ' + data.temperature + ' °C';
+                    document.getElementById('humidity').textContent = 'Humidity: ' + data.humidity + ' %';
+                    document.getElementById('rainfall').textContent = 'Rainfall: ' + data.rainfall + ' mm (last hour)';
 
-                    // Store the weather data in hidden fields for the prediction form
-                    document.getElementById('latitude').value = latitude;
-                    document.getElementById('longitude').value = longitude;
-                    document.getElementById('temperature-input').value = data.temperature;
-                    document.getElementById('humidity-input').value = data.humidity;
-                    document.getElementById('rainfall-input').value = data.rainfall;
-
-                    // Autofill the input fields if they are empty
-                    if (!document.getElementById('user-temperature').value) {
-                        document.getElementById('user-temperature').value = data.temperature;
-                    }
-                    if (!document.getElementById('user-humidity').value) {
-                        document.getElementById('user-humidity').value = data.humidity;
-                    }
-                    if (!document.getElementById('user-rainfall').value) {
-                        document.getElementById('user-rainfall').value = data.rainfall;
-                    }
+                    // Update the crop prediction form
+                    document.getElementById('user-temperature').value = data.temperature;
+                    document.getElementById('user-humidity').value = data.humidity;
+                    document.getElementById('user-rainfall').value = data.rainfall;
 
                     // Fetch forecast after getting weather data
                     fetchForecast(latitude, longitude);
@@ -129,8 +115,6 @@
             .then(response => response.json())
             .then(data => {
                 const forecastContainer = document.getElementById('forecast-container');
-                const tempData = [];
-                const labels = [];
                 forecastContainer.innerHTML = '';  // Clear any existing content
 
                 if (data.error) {
@@ -142,8 +126,10 @@
                 data.forecast.forEach(forecast => {
                     const forecastDay = document.createElement('div');
                     forecastDay.classList.add('forecast-day');
+                    const date = new Date(forecast.date);
+                    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
                     forecastDay.innerHTML = `
-                        <h3>${forecast.date}</h3>
+                        <h3>${dayName}</h3>
                         <p class="forecast-details">
                             Temperature: ${forecast.temperature} °C<br>
                             Humidity: ${forecast.humidity}%<br>
@@ -151,53 +137,10 @@
                         </p>
                     `;
                     forecastContainer.appendChild(forecastDay);
-
-                    // Collect data for the graph
-                    tempData.push(forecast.temperature);
-                    labels.push(forecast.date);
                 });
-
-                // Draw the temperature graph
-                drawTemperatureGraph(labels, tempData);
             })
             .catch(error => {
                 console.error('Error fetching forecast:', error);
-            });
-        }
-
-        function drawTemperatureGraph(labels, tempData) {
-            const ctx = document.getElementById('temperature-chart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Temperature (°C)',
-                        data: tempData,
-                        borderColor: '#4CAF50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.2)',
-                        borderWidth: 2,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Temperature (°C)',
-                            },
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date',
-                            },
-                        },
-                    },
-                }
             });
         }
 
@@ -232,7 +175,10 @@
                     <ul>
                         <li>
                             <div class="dropdown">
-                                <span id="user-info">User</span>
+                                <a href="{{ url_for('account') }}" class="user-info">
+                                    <i class='bx bxs-user-circle profile-icon'></i>
+                                    <span id="user-info">User</span>
+                                </a>
                                 <div class="dropdown-content">
                                     <a href="/logout">Logout</a>
                                 </div>
@@ -250,46 +196,46 @@
                         <div id="forecast-container">
                             <!-- Forecast days will be dynamically populated here -->
                         </div>
-                        <canvas id="temperature-chart" width="400" height="200"></canvas>
                     </section>
 
                     <div class="right-section">
-                        <!-- Weather Information Section -->
-                <section id="weather-info">
-    <div class="weather-header">
-        <h3>Current Weather Information</h3>
-        <div class="location-selector">
-            <select id="kenyan-counties" onchange="handleCountySelection()">
-                <option value="">Select a county</option>
-            </select>
-        </div>
-    </div>
-    <p id="location">Location: </p>
-    <p id="temperature">Temperature: </p>
-    <p id="humidity">Humidity: </p>
-    <p id="rainfall">Rainfall: </p>
-</section>
+                        <!-- Updated Weather Information Section -->
+                        <section id="weather-info" class="weather-section">
+                            <div class="weather-header">
+                                <h3 class="weather-title">Current Weather</h3>
+                                <div class="location-selector">
+                                    <select id="kenyan-counties" onchange="handleCountySelection()">
+                                        <option value="">Select a county</option>
+                                    </select>
+                                    <div class="select-arrow">
+                                        <i class='bx bx-chevron-down'></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="weather-grid">
+                                <div id="location" class="weather-item"><strong>Location:</strong> <span>-</span></div>
+                                <div id="temperature" class="weather-item"><strong>Temperature:</strong> <span>-</span></div>
+                                <div id="humidity" class="weather-item"><strong>Humidity:</strong> <span>-</span></div>
+                                <div id="rainfall" class="weather-item"><strong>Rainfall:</strong> <span>-</span></div>
+                            </div>
+                        </section>
                         <!-- Form for Crop Prediction -->
-                        <section id="prediction-form">
-                            <h3>Crop Prediction Form</h3>
-                            <form method="POST" action="/predict">
-                                <!-- Hidden fields to store automatic weather data -->
-                                <input type="hidden" id="latitude" name="latitude">
-                                <input type="hidden" id="longitude" name="longitude">
-                                <input type="hidden" id="temperature-input" name="temperature">
-                                <input type="hidden" id="humidity-input" name="humidity">
-                                <input type="hidden" id="rainfall-input" name="rainfall">
-
-                                <!-- User input fields -->
-                                <label for="user-temperature">Temperature (°C):</label>
-                                <input type="number" step="0.01" id="user-temperature" name="user_temperature" required>
-
-                                <label for="user-humidity">Humidity (%):</label>
-                                <input type="number" step="0.01" id="user-humidity" name="user_humidity" required>
-
-                                <label for="user-rainfall">Rainfall (mm):</label>
-                                <input type="number" step="0.01" id="user-rainfall" name="user_rainfall" required>
-                                <input type="submit" class="predict-button" value="Predict">
+                        <section id="prediction-form" class="prediction-section">
+                            <h3 class="prediction-title">Crop Prediction Form</h3>
+                            <form method="POST" action="{{ url_for('predict') }}" id="crop-prediction-form">
+                                <div class="form-group">
+                                    <label for="user-temperature">Temperature (°C):</label>
+                                    <input type="number" step="0.01" id="user-temperature" name="user-temperature" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-humidity">Humidity (%):</label>
+                                    <input type="number" step="0.01" id="user-humidity" name="user-humidity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-rainfall">Rainfall (mm):</label>
+                                    <input type="number" step="0.01" id="user-rainfall" name="user-rainfall" required>
+                                </div>
+                                <button type="submit" class="predict-button">Predict</button>
                             </form>
                         </section>
                     </div>
@@ -297,77 +243,20 @@
             </main>
         </div>
     </div>
-    <!-- Footer -->
-    <footer>
-        <div class="footer-logo">
-            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
-        </div>
-        <p>© AgriTrade. All Rights Reserved</p>
-    </footer>
 
-    <!-- Firebase Authentication and Firestore Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
-            authDomain: "agritrade-3fe65.firebaseapp.com",
-            databaseURL: "https://agritrade-3fe65-default-rtdb.firebaseio.com",
-            projectId: "agritrade-3fe65",
-            storageBucket: "agritrade-3fe65.appspot.com",
-            messagingSenderId: "742671449846",
-            appId: "1:742671449846:web:2bd6f4b4cd0772bee6b6d7",
-            measurementId: "G-5NSK9449FG"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        const displayUserName = async (userEmail) => {
-            const userInfoElement = document.getElementById('user-info');
-            const usersRef = collection(db, "users");
-            const q = query(usersRef, where("email", "==", userEmail));
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-                querySnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    if (userData.fullName) {
-                        userInfoElement.textContent = userData.fullName;
-                    } else {
-                        userInfoElement.textContent = "User";
-                    }
-                });
-            } else {
-                console.error("No user data found in Firestore.");
-            }
-        };
-
-        // Display user info
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('user-info').textContent = user.email;
-            } else {
-                console.error("No user is signed in.");
-                window.location.href = "/login";
-            }
-        });
-
-        const signOutButton = document.querySelector('.dropdown-content a');
-        signOutButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            signOut(auth).then(() => {
-                console.log("User signed out.");
-                window.location.href = "/logout";
-            }).catch((error) => {
-                console.error("Sign out error:", error);
-            });
-        });
-    </script>
     <script>
+        // Add this script for form validation
+        document.getElementById('crop-prediction-form').addEventListener('submit', function(event) {
+            const temperature = document.getElementById('user-temperature').value;
+            const humidity = document.getElementById('user-humidity').value;
+            const rainfall = document.getElementById('user-rainfall').value;
+
+            if (!temperature || !humidity || !rainfall) {
+                event.preventDefault();
+                alert('Please fill all fields');
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.querySelector('.sidebar');
             const mainContent = document.querySelector('main');
@@ -393,5 +282,57 @@
             });
         });
     </script>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, serverTimestamp, query, where, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
+            authDomain: "agritrade-3fe65.firebaseapp.com",
+            databaseURL: "https://agritrade-3fe65-default-rtdb.firebaseio.com",
+            projectId: "agritrade-3fe65",
+            storageBucket: "agritrade-3fe65.appspot.com",
+            messagingSenderId: "742671449846",
+            appId: "1:742671449846:web:2bd6f4b4cd0772bee6b6d7",
+            measurementId: "G-5NSK9449FG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        // Display user info and load inventory
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log(user.uid);
+                currentUser = user;
+                
+                // Fetch user's full name from Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    const fullName = userData.fullName || "User";
+                    document.getElementById('user-info').textContent = fullName;
+                } else {
+                    console.log("No user document found!");
+                    document.getElementById('user-info').textContent = "User";
+                }
+                
+                loadInventory();
+                loadsoldItems();
+            } else {
+                console.error("No user is signed in.");
+                window.location.href = "/login";
+            }
+        });
+    </script>
+    
 </body>
 </html>

@@ -305,24 +305,30 @@ th {
     border-radius: 5px;
     font-size: 16px;
 }
-
-/* Footer */
-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #4CAF50;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
+.confirmation-message {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
 }
-
-.footer-logo img {
-    width: 60px;
-    margin-bottom: 10px;
+.harvested-status {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
 }
-
-footer p {
-    font-size: 14px;
+.profile-icon {
+    font-size: 32px;
+    color: #4CAF50;
+    vertical-align: middle;
+}
+.profile-icon:hover {
+    transform: scale(1.1); /* Slightly enlarge the icon on hover */
+}
+.user-info:hover {
+    cursor: pointer;
 }

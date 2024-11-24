@@ -12,7 +12,18 @@
 </head>
 <body>
     <header>
-        
+        <div class="logo">
+            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+            <span>AGRITRADE</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('welcome') }}" class="active">HOME</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">ABOUT US</a></li>
+                <li><a href="{{ url_for('login') }}">LOGIN</a></li>
+            </ul>
+        </nav>
     </header>
     <div class="container">
         <!-- Sidebar -->
@@ -35,22 +46,12 @@
                 </div>
                 <nav>
                     <ul>
-                        <li><a href="{{ url_for('welcome') }}" >HOME</a></li>
-                        <li><a href="#">RESOURCES</a></li>
-                        <li><a href="#">ABOUT US</a></li>
-                        <li><a href="{{ url_for('login') }}" class="active">LOGIN</a></li>
-                    </ul>
-                </nav>
-               
-                <nav>
-                    <ul>
                         <li>
                             <div class="dropdown">
-                                <a href="{{ url_for('account') }}">
-                                    <img src="{{ url_for('static', filename='people.png') }}" alt="Profile" class="profile-icon">
+                                <a href="{{ url_for('account') }}" class="user-info">
+                                    <i class='bx bxs-user-circle profile-icon'></i>
+                                    <span id="user-info">User</span>
                                 </a>
-                                
-                                <span id="user-info">User</span>
                                 <div class="dropdown-content">
                                     <a href="/logout">Logout</a>
                                 </div>
@@ -82,14 +83,6 @@
                     <div class="chart-container">
                         <h2>Financial Statistics</h2>
                         <div class="stats-header">
-                            <!--<div class="current-month">
-                                <span>Current Month</span>
-                                <strong id="current-month">Loading...</strong>
-                            </div>
-                            <div class="monthly-earnings">
-                                <span>Month's Earnings</span>
-                                <strong id="monthly-earnings">Loading...</strong>
-                            </div>-->
                         </div>
                         <canvas id="financial-chart"></canvas>
                     </div>
@@ -103,19 +96,11 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-logo">
-            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
-        </div>
-        <p>© AgriTrade. All Rights Reserved</p>
-    </footer>
-
     <!-- Firebase Authentication and Firestore Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, orderBy, limit, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
@@ -133,12 +118,11 @@
         const db = getFirestore(app);
         
         document.addEventListener('DOMContentLoaded', () => {
-            onAuthStateChanged(auth, (user) => {
+            onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    console.log(user.email);
+                    console.log(user.uid);
                     const userId = user.uid;
-                    document.getElementById('user-info').textContent = user.email;
-                    displayUserName(user.email);
+                    await displayUserName(userId);
                     calculateMonthlyEarnings(userId);
                     fetchCrops(userId);
                     initializeCharts(userId);
@@ -193,19 +177,22 @@
             }
         }
 
-        async function displayUserName(userEmail) {
+        async function displayUserName(userId) {
             const userInfoElement = document.getElementById('user-info');
-            const usersRef = collection(db, "users");
-            const q = query(usersRef, where("email", "==", userEmail));
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-                querySnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    userInfoElement.textContent = userData.username || "User";
-                });
-            } else {
-                console.error("No user data found in Firestore.");
+            try {
+                const userDocRef = doc(db, "users", userId);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    userInfoElement.textContent = userData.fullName || "User";
+                } else {
+                    console.error("No user document found!");
+                    userInfoElement.textContent = "User";
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                userInfoElement.textContent = "User";
             }
         }
 
@@ -379,5 +366,29 @@
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         currentMonthElement.textContent = monthNames[currentDate.getMonth()];
     </script>
+
+    <script>
+        // Sidebar toggle functionality
+const sidebar = document.getElementById('sidebar');
+        let isSidebarMinimized = false;
+
+        const toggleSidebar = () => {
+            if (isSidebarMinimized) {
+                sidebar.classList.remove('minimized');
+            } else {
+                sidebar.classList.add('minimized');
+            }
+            isSidebarMinimized = !isSidebarMinimized;
+        };
+
+        sidebar.addEventListener('mouseover', () => {
+            if (isSidebarMinimized) toggleSidebar();
+        });
+
+        sidebar.addEventListener('mouseleave', () => {
+            if (!isSidebarMinimized) toggleSidebar();
+        });
+    </script>
 </body>
 </html>
+

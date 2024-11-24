@@ -351,32 +351,48 @@ nav ul li a.active {
     color: #4CAF50;
 }
 .profile-icon {
-    width: 30px; /* Adjust size of the icon */
-    height: 30px; /* Adjust size of the icon */
-    border-radius: 20%; /* Make the icon round */
-    cursor: pointer;
-    transition: transform 0.3s ease;
+    font-size: 32px;
+    color: #4CAF50;
+    vertical-align: middle;
 }
-
 .profile-icon:hover {
     transform: scale(1.1); /* Slightly enlarge the icon on hover */
 }
-/* Footer */
-footer {
-    position: fixed; /* Fixes the footer to the bottom */
-    bottom: 0; /* Aligns it to the bottom of the viewport */
+.user-info:hover {
+    cursor: pointer;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
-    background-color: #4CAF50; /* Changed to green */
-    color: #fff; /* Keep the text color white */
-    text-align: center;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
     padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
 }
 
-.footer-logo img {
-    width: 80px;
-    margin-bottom: 10px;
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-footer p {
-    font-size: 14px;
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }

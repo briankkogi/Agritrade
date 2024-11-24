@@ -342,20 +342,69 @@ input[type="submit"].predict-button:hover {
     font-size: 16px;
     color: #333;
 }
-/* Footer styling */
-footer {
-    margin-top: 50px;
-    background-color: #4CAF50; /* Changed to green */
-    color: #fff; /* Keep the text color white */
-    text-align: center;
+.weather-section {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    margin-bottom: 20px;
 }
-
-.footer-logo img {
-    width: 60px;
-    margin-bottom: 10px;
+.weather-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 }
-
-footer p {
-    font-size: 14px;
+.weather-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+.location-selector {
+    position: relative;
+}
+.location-selector select {
+    appearance: none;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 30px 8px 10px;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+}
+.location-selector .select-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+.weather-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+.weather-item {
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.9rem;
+    color: #555;
+}
+.weather-item strong {
+    color: #333;
+    font-weight: 600;
+}
+.profile-icon {
+    font-size: 32px;
+    color: #4CAF50;
+    vertical-align: middle;
+}
+.profile-icon:hover {
+    transform: scale(1.1); /* Slightly enlarge the icon on hover */
+}
+.user-info:hover {
+    cursor: pointer;
 }

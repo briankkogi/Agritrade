@@ -8,24 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='manage_crops.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
-    <style>
-        .confirmation-message {
-            color: #155724;
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            padding: 5px 10px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-        .harvested-status {
-            color: #856404;
-            background-color: #fff3cd;
-            border-color: #ffeeba;
-            padding: 5px 10px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -66,11 +48,10 @@
                     <ul>
                         <li>
                             <div class="dropdown">
-                                <a href="{{ url_for('account') }}">
-                                    <img src="{{ url_for('static', filename='people.png') }}" alt="Profile" class="profile-icon">
+                                <a href="{{ url_for('account') }}" class="user-info">
+                                    <i class='bx bxs-user-circle profile-icon'></i>
+                                    <span id="user-info">User</span>
                                 </a>
-                                <span id="user-info">User</span>
-                                
                                 <div class="dropdown-content">
                                     <a href="/logout">Logout</a>
                                 </div>
@@ -129,10 +110,6 @@
 
     <!-- Footer -->
     <footer>
-        <div class="footer-logo">
-            <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
-        </div>
-        <p>© AgriTrade. All Rights Reserved</p>
     </footer>
 
     <!-- Firebase Scripts -->
@@ -158,13 +135,27 @@
 
         let currentUser = null;
 
-        // Display user info and load crops
-        onAuthStateChanged(auth, (user) => {
+        // Display user info and load inventory
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 console.log(user.uid);
                 currentUser = user;
-                document.getElementById('user-info').textContent = user.email;
-                loadCrops();
+                
+                // Fetch user's full name from Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    const fullName = userData.fullName || "User";
+                    document.getElementById('user-info').textContent = fullName;
+                } else {
+                    console.log("No user document found!");
+                    document.getElementById('user-info').textContent = "User";
+                }
+                
+                loadInventory();
+                loadsoldItems();
             } else {
                 console.error("No user is signed in.");
                 window.location.href = "/login";

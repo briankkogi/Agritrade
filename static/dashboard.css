@@ -10,98 +10,106 @@ body {
     font-family: 'Open Sans', sans-serif;
     color: #333;
     background-color: #f9f9f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Main container to hold sidebar and content */
 .container {
     display: flex;
+    flex: 1;
 }
 
 /* Profile icon */
 .profile-icon {
-    width: 30px; /* Adjust size of the icon */
-    height: 30px; /* Adjust size of the icon */
-    border-radius: 20%; /* Make the icon round */
+    width: 30px;
+    height: 30px;
+    border-radius: 20%;
     cursor: pointer;
     transition: transform 0.3s ease;
 }
 
 .profile-icon:hover {
-    transform: scale(1.1); /* Slightly enlarge the icon on hover */
+    transform: scale(1.1);
 }
 
 /* Sidebar styles */
 .sidebar {
     width: 250px;
-    background-color: #4CAF50; /* Changed to green */
-    height: calc(100vh - 80px); /* Full height minus the header height */
+    background-color: #4CAF50;
+    height: calc(100vh - 80px);
     position: fixed;
-    top: 80px; /* Position below the header */
+    top: 80px;
     left: 0;
     padding-top: 30px;
     display: flex;
-    flex-direction: column; /* Ensure sidebar items go top to bottom */
+    flex-direction: column;
+    transition: width 0.3s ease;
 }
 
 /* Sidebar minimized state */
 .sidebar.minimized {
-    width: 90px; /* Minimized width */
+    width: 90px;
 }
 
 .sidebar ul {
     list-style-type: none;
     padding: 0;
-    width: 90%; /* Make sure the sidebar items take the full width */
+    width: 90%;
     display: flex;
-    flex-direction: column; /* Stack items vertically */
+    flex-direction: column;
 }
 
 .sidebar ul li {
-    width: 100%; /* Ensure the list item takes full width */
+    width: 100%;
 }
 
 .sidebar ul li a {
     display: flex;
     align-items: center;
-    color: #f9f9f9; /* Keep the text color white */
-    padding: 20px; /* Increase padding for larger clickable area */
+    color: #f9f9f9;
+    padding: 20px;
     text-decoration: none;
     font-weight: 600;
     font-family: 'Montserrat', sans-serif;
-    font-size: 18px; /* Increased font size */
-    width: 100%; /* Ensure anchor tags take full width */
+    font-size: 18px;
+    transition: background-color 0.3s ease, border 0.3s ease;
+    width: 100%;
 }
 
 /* Active and hover states */
 .sidebar ul li a:hover,
 .sidebar ul li a.active {
-    color: #000; /* Change text color on hover and active */
-    background-color: #f9f9f9; /* Set background color to white for active */
-    border-left: 5px solid #4CAF50; /* Add a left border with the sidebar color */
+    color: #000;
+    background-color: #f9f9f9;
+    border-left: 5px solid #4CAF50;
 }
 
 .sidebar ul li a .icon {
-    font-size: 24px; /* Increase icon size */
-    margin-right: 20px; /* Increase spacing between icon and text */
+    font-size: 24px;
+    margin-right: 20px;
 }
 
 /* Hide text in minimized sidebar */
 .sidebar.minimized ul li a .text {
-    display: none; /* Hide text when minimized */
+    display: none;
 }
 
 /* Main content area */
 .main-content {
-    margin-left: 250px; /* Same as sidebar width */
+    margin-left: 250px;
     padding: 40px;
-    margin-top: 80px; /* Add margin to position below the header */
-    width: calc(100% - 250px); /* Adjust width to account for sidebar */
+    margin-top: 80px;
+    width: calc(100% - 250px);
+    transition: margin-left 0.3s ease, width 0.3s ease;
+    min-height: calc(100vh - 80px);
 }
 
 /* Sidebar minimized state adjustments for main content */
 .sidebar.minimized + .main-content {
-    margin-left: 70px; /* Adjust margin for minimized sidebar */
-    width: calc(100% - 70px); /* Adjust width for minimized sidebar */
+    margin-left: 90px;
+    width: calc(100% - 90px);
 }
 
 /* Header section */
@@ -112,11 +120,12 @@ header {
     background-color: #ffffff;
     padding: 20px 40px;
     border-bottom: 1px solid #e0e0e0;
-    position: fixed; /* Make header fixed */
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000; /* Ensure header is above other content */
+    z-index: 1000;
+    height: 80px;
 }
 
 .logo {
@@ -157,7 +166,7 @@ nav ul li a.active {
 }
 
 .dropdown-content {
-    display: none; /* Initially hide the dropdown */
+    display: none;
     position: absolute;
     right: 0;
     background-color: #ffffff;
@@ -167,7 +176,7 @@ nav ul li a.active {
 }
 
 .dropdown:hover .dropdown-content {
-    display: block; /* Show dropdown on hover */
+    display: block;
 }
 
 .dropdown-content a {
@@ -178,7 +187,7 @@ nav ul li a.active {
 }
 
 .dropdown-content a:hover {
-    background-color: #f1f1f1; /* Change background on hover */
+    background-color: #f1f1f1;
 }
 
 /* Overview cards */
@@ -198,7 +207,7 @@ nav ul li a.active {
 }
 
 .overview-card:last-child {
-    margin-right: 0; /* No margin on the last card */
+    margin-right: 0;
 }
 
 .overview-card h3 {
@@ -211,17 +220,18 @@ nav ul li a.active {
     font-size: 16px;
     color: #666;
 }
-#crop-image{
+
+#crop-image {
     height: 30px;
     margin-right: 15px;
-
 }
-#edit-image{
+
+#edit-image {
     height: 30px;
     margin-right: 15px;
-
 }
-.add-crop-btn{
+
+.add-crop-btn {
     width: 50%;
     padding: 10px;
     background-color: #4CAF50;
@@ -232,6 +242,7 @@ nav ul li a.active {
     cursor: pointer;
     margin-left: 100px;
 }
+
 /* Charts and activities */
 .chart-container,
 .recommendations,
@@ -257,23 +268,14 @@ h2 {
 .activities ul li {
     margin-bottom: 10px;
 }
-
-/* Footer */
-footer {
-    position: fixed; /* Fixes the footer to the bottom */
-    bottom: 0; /* Aligns it to the bottom of the viewport */
-    left: 0;
-    background-color: #4CAF50; /* Changed to green */
-    color: #fff; /* Keep the text color white */
-    text-align: center;
-    padding: 20px;
+.profile-icon {
+    font-size: 32px;
+    color: #4CAF50;
+    vertical-align: middle;
 }
-
-.footer-logo img {
-    width: 80px;
-    margin-bottom: 10px;
+.profile-icon:hover {
+    transform: scale(1.1); 
 }
-
-footer p {
-    font-size: 14px;
+.user-info:hover {
+    cursor: pointer;
 }
