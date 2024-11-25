@@ -333,21 +333,94 @@ input[type="submit"]:hover {
     background-color: darkred; /* Darker red when hovering */
 }
 
-footer {
-    position: fixed; /* Fixes the footer to the bottom */
-    bottom: 0; /* Aligns it to the bottom of the viewport */
-    left: 0;
-    background-color: #4CAF50; /* Changed to green */
-    color: #fff; /* Keep the text color white */
-    text-align: center;
+.report-section {
+    margin-top: 20px;
     padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
 }
-
-.footer-logo img {
-    width: 80px;
+.report-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+.report-btn:hover {
+    background-color: #45a049;
+}
+.report-select {
+    width: 100%;
+    padding: 10px;
     margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+/* ... (previous CSS remains unchanged) ... */
+
+.btn,
+.submit-btn,
+.cancel-btn,
+.report-btn {
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
-footer p {
-    font-size: 14px;
+.submit-btn,
+.report-btn {
+    background-color: #4CAF50;
+    color: white;
+    width: auto;
+    min-width: 150px;
 }
+
+.submit-btn:hover,
+.report-btn:hover {
+    background-color: #45a049;
+}
+
+.cancel-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #d32f2f;
+}
+
+.confirm-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background-color: #45a049;
+}
+
+/* Update the report section styles */
+.report-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.report-select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+/* ... (rest of the CSS remains unchanged) ... */

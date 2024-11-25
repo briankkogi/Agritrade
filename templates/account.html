@@ -1,119 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Account- AgriTrade</title>
-        <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='account.css') }}">
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
-    </head>
-    <body>
-        <div class="container">
-            <!-- Sidebar -->
-            <nav class="sidebar" id="sidebar">
-                <ul>
-                    <li><a href="/dashboard"><span class="icon"><i class='bx bx-home'></i></span><span class="text"> Dashboard</span></a></li>
-                    <li><a href="/manage_crops"><span class="icon"><i class='bx bx-leaf'></i></span><span class="text"> Manage Crops</span></a></li>
-                    <li><a href="/inventory"><span class="icon"><i class='bx bx-list-ul'></i></span><span class="text"> Inventory</span></a></li>
-                    <li><a href="/home"><span class="icon"><i class='bx bx-bar-chart'></i></span><span class="text"> Predictions</span></a></li>
-                </ul>
-            </nav>
-        
-            <!-- Main content area -->
-            <div class="main-content">
-                <!-- Header -->
-                <header>
-                    <div class="logo">
-                        <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
-                        <span>AGRITRADE</span>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - AgriTrade</title>
+    <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='account.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .user-details {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .user-details h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1.5rem;
+        }
+        .profile-info {
+            flex-grow: 1;
+        }
+        .profile-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .profile-email {
+            color: #666;
+            font-size: 1rem;
+        }
+        .details {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.5rem 1rem;
+            align-items: center;
+        }
+        .details p {
+            margin: 0;
+        }
+        .details strong {
+            color: #555;
+        }
+        .detail {
+            color: #333;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        .submit-btn, .delete-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+    <script>
+        console.log("jsPDF loaded:", typeof window.jspdf);
+    </script>
+</head>
+<body>
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error("Global error:", message, "at", source, ":", lineno, ":", colno, "Error object:", error);
+        };
+    </script>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <ul>
+                <li><a href="/dashboard"><span class="icon"><i class='bx bx-home'></i></span><span class="text"> Dashboard</span></a></li>
+                <li><a href="/manage_crops"><span class="icon"><i class='bx bx-leaf'></i></span><span class="text"> Manage Crops</span></a></li>
+                <li><a href="/inventory"><span class="icon"><i class='bx bx-list-ul'></i></span><span class="text"> Inventory</span></a></li>
+                <li><a href="/home"><span class="icon"><i class='bx bx-bar-chart'></i></span><span class="text"> Predictions</span></a></li>
+            </ul>
+        </nav>
+    
+        <!-- Main content area -->
+        <div class="main-content">
+            <!-- Header -->
+            <header>
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
+                    <span>AGRITRADE</span>
+                </div>
+            </header>
+
+            <!-- User Details Section -->
+            <div class="user-details" id="userDetails">
+                <h1>My Profile</h1>
+                <div class="profile-header">
+                    <div class="profile-image">
+                        <i class='bx bxs-user-circle' style="font-size: 3rem; color: #4a4a4a;"></i>
                     </div>
-                    <nav>
-                        <ul>
-                            <li><a href="{{ url_for('welcome') }}" >HOME</a></li>
-                            <li><a href="#">RESOURCES</a></li>
-                            <li><a href="#">ABOUT US</a></li>
-                            <li><a href="{{ url_for('login') }}" class="active">LOGIN</a></li>
-                        </ul>
-                    </nav>
-                </header>
-    
-                <!-- User Details Section -->
-                <div class="user-details" id="userDetails"> 
-                    <h1>My Profile</h1>
-    
-                    <!-- Profile Image -->
-                    <div class="details">
-                        <img src="{{ url_for('static', filename='people.png') }}" alt="User Profile Image" class="profile-icon">
-                        <p><strong>Full Name:</strong></p>
-                        <p class="detail"><span id="fullnameDisplay">John Doe</span></p>
-                        <p><strong>Email:</strong></p>
-                        <p class="detail"><span id="emailDisplay">john.doe@example.com</span></p>
-                        <p><strong>Phone Number:</strong></p>
-                        <p class="detail"><span id="numberDisplay">07........</span></p>
+                    <div class="profile-info">
+                        <div class="profile-name"><span id="fullnameDisplay">John Doe</span></div>
+                        <div class="profile-email"><span id="emailDisplay">john.doe@example.com</span></div>
                     </div>
-    
-                    <!-- Edit Profile Button -->
+                </div>
+                <div class="details">
+                    <p><strong>Full Name:</strong></p>
+                    <p class="detail"><span id="fullnameDisplay2">John Doe</span></p>
+                    <p><strong>Email:</strong></p>
+                    <p class="detail"><span id="emailDisplay2">john.doe@example.com</span></p>
+                    <p><strong>Phone Number:</strong></p>
+                    <p class="detail"><span id="numberDisplay">07........</span></p>
+                </div>
+                <div class="action-buttons">
                     <button class="submit-btn" id="editProfileBtn">Edit Profile</button>
-    
-                    <!-- Delete Profile Section (Moved Inside) -->
-                    <div class="delete-profile">
-                        <a href="javascript:void(0);" id="deleteIcon">
-                            <img src="{{ url_for('static', filename='delete.png') }}" alt="Delete Icon" class="delete-icon"> 
-                        </a>
-                        <h4 class="delete">Delete Profile</h4>
-                    </div>
-                </div> <!-- Closing user-details div -->
-            </div> <!-- Closing main-content div -->
-        </div> <!-- Closing container div -->
-        
-        <!-- Modal for editing profile -->
-        <div id="editProfileModal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn" id="closeModalBtn">&times;</span>
-                <h1>Update Your Profile</h1>
-                <form id="profileForm">
-                    <div class="form-group">
-                        <label for="fullname">Full Name</label>
-                        <input type="text" id="fullname" name="fullname" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phoneNumber">Phone Number</label>
-                        <input type="text" id="phoneNumber" name="phoneNumber" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password">
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" value="Update Profile">
-                    </div>
-                    <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
-                </form>
+                    <button class="delete-btn" id="deleteIcon">Delete Profile</button>
+                </div>
+            </div>
+
+            <!-- Report Generation Section -->
+            <div class="report-section">
+                <h2>Generate Report</h2>
+                <p>Select a report type and click the button to generate a PDF report:</p>
+                <select id="reportType" class="report-select">
+                    <option value="Inventory">Inventory Report</option>
+                    <option value="Sold Items">Sold Items Report</option>
+                    <option value="Crops">Crops Report</option>
+                    <option value="Overall">Overall Report</option>
+                </select>
+                <button id="generateReportBtn" class="report-btn">Generate PDF Report</button>
             </div>
         </div>
+    </div>
     
-        <footer>
-            <div class="footer-logo">
-                <img src="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}" alt="AgriTrade Logo">
-            </div>
-            <p>© AgriTrade. All Rights Reserved</p>
-        </footer>
-  
-    
-
-    
-
+    <!-- Modal for editing profile -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <h1>Update Your Profile</h1>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password">
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Update Profile">
+                </div>
+                <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+            </form>
+        </div>
+    </div>
 
     <script type="module"> 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyAC0as_uoSjFWaQNEZAI_wtK1kqYAReF-0",
@@ -136,10 +221,12 @@
                 try {
                     const userDocRef = doc(db, "users", user.uid);
                     const userDoc = await getDoc(userDocRef);
-                    if (userDoc.exists) {
+                    if (userDoc.exists()) {
                         const userData = userDoc.data();
                         document.getElementById("fullnameDisplay").textContent = userData.fullName;
+                        document.getElementById("fullnameDisplay2").textContent = userData.fullName;
                         document.getElementById("emailDisplay").textContent = userData.email;
+                        document.getElementById("emailDisplay2").textContent = userData.email;
                         document.getElementById("numberDisplay").textContent = userData.phoneNumber;
                     } else {
                         console.log("No user data found in Firestore.");
@@ -151,6 +238,7 @@
                 window.location.href = "/login";
             }
         });
+
         async function updateUserDetails() {
             const user = auth.currentUser;
             if (user) {
@@ -160,7 +248,9 @@
                     if (userDoc.exists()) {
                         const userData = userDoc.data();
                         document.getElementById("fullnameDisplay").textContent = userData.fullName;
+                        document.getElementById("fullnameDisplay2").textContent = userData.fullName;
                         document.getElementById("emailDisplay").textContent = userData.email;
+                        document.getElementById("emailDisplay2").textContent = userData.email;
                         document.getElementById("numberDisplay").textContent = userData.phoneNumber;
                     } else {
                         console.log("No user data found in Firestore.");
@@ -170,7 +260,8 @@
                 }
             }
         }
-                // Show form and hide user details when Edit Profile is clicked
+
+        // Show form and hide user details when Edit Profile is clicked
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('editProfileBtn').addEventListener('click', () => {
                 const modal = document.getElementById('editProfileModal');
@@ -227,7 +318,7 @@
                     }
                 } catch (error) {
                     console.error("Error updating profile: ", error);
-                   
+                    alert("An error occurred while updating the profile. Please try again.");
                 }
             });
         
@@ -271,8 +362,141 @@
                 alert("Password is required to delete your account.");
             }
         });
-                </script>
-        
 
+        // Report Generation
+        async function generateReport(reportType) {
+            console.log(`${reportType} report generation started`);
+            const user = auth.currentUser;
+            if (!user) {
+                console.error("User not logged in");
+                alert('Please log in to generate a report.');
+                return;
+            }
+
+            try {
+                console.log("Fetching data from Firestore");
+                const inventoryQuery = query(collection(db, "inventory"), where("userId", "==", user.uid));
+                const soldItemsQuery = query(collection(db, "itemsSold"), where("userId", "==", user.uid));
+                const cropsQuery = query(collection(db, "crops"), where("userId", "==", user.uid));
+
+                const [inventorySnapshot, soldItemsSnapshot, cropsSnapshot] = await Promise.all([
+                    getDocs(inventoryQuery),
+                    getDocs(soldItemsQuery),
+                    getDocs(cropsQuery)
+                ]);
+
+                console.log("Data fetched successfully");
+                console.log("Inventory items:", inventorySnapshot.size);
+                console.log("Sold items:", soldItemsSnapshot.size);
+                console.log("Crops:", cropsSnapshot.docs.map(doc => doc.data()));
+
+                if (inventorySnapshot.empty && soldItemsSnapshot.empty && cropsSnapshot.empty) {
+                    console.warn("No data found for the user");
+                    alert("No data found to generate the report. Please add some inventory, sold items, or crops first.");
+                    return;
+                }
+
+                console.log("Generating PDF");
+                if (typeof window.jspdf === 'undefined') {
+                    console.error("jsPDF is not defined");
+                    throw new Error("PDF library not loaded");
+                }
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.setFontSize(18);
+                doc.text(`AgriTrade ${reportType} Report`, 105, 15, null, null, 'center');
+                doc.setFontSize(12);
+
+                // Add report generation date
+                const currentDate = new Date().toLocaleString('en-KE', { timeZone: 'Africa/Nairobi' });
+                doc.text(`Report Generated: ${currentDate}`, 10, 25);
+
+                let yPos = 35;
+
+                if (reportType === 'Inventory' || reportType === 'Overall') {
+                    // Inventory Section
+                    doc.setFontSize(14);
+                    doc.text('Inventory', 10, yPos);
+                    yPos += 10;
+                    doc.setFontSize(12);
+                    inventorySnapshot.forEach(docSnapshot => {
+                        const item = docSnapshot.data();
+                        const text = `${item.cropName}: ${item.quantity} kg`;
+                        doc.text(text, 10, yPos);
+                        yPos += 7;
+                        if (yPos > 280) {
+                            doc.addPage();
+                            yPos = 20;
+                        }
+                    });
+                    yPos += 10;
+                }
+
+                if (reportType === 'Sold Items' || reportType === 'Overall') {
+                    // Sold Items Section
+                    doc.setFontSize(14);
+                    doc.text('Sold Items', 10, yPos);
+                    yPos += 10;
+                    doc.setFontSize(12);
+                    soldItemsSnapshot.forEach(docSnapshot => {
+                        const item = docSnapshot.data();
+                        const text = `${item.cropName}: ${item.quantitySold} kg, Price: KES ${item.pricePerKg}/kg, Total: KES ${item.totalAmount}`;
+                        doc.text(text, 10, yPos);
+                        yPos += 7;
+                        if (yPos > 280) {
+                            doc.addPage();
+                            yPos = 20;
+                        }
+                    });
+                    yPos += 10;
+                }
+
+                if (reportType === 'Crops' || reportType === 'Overall') {
+                    // Crops Section
+                    doc.setFontSize(14);
+                    doc.text('Crops', 10, yPos);
+                    yPos += 10;
+                    doc.setFontSize(12);
+                    cropsSnapshot.forEach(docSnapshot => {
+                        const crop = docSnapshot.data();
+                        const lines = [
+                            `Name: ${crop.name}`,
+                            `Quantity Planted: ${crop.quantity} kg`,
+                            `Status: ${crop.status}`,
+                            `Harvested Quantity: ${crop.harvestedQuantity || 'Not harvested'} kg`,
+                            `Planted Date: ${crop.timestamp ? new Date(crop.timestamp.toDate()).toLocaleDateString() : 'N/A'}`,
+                            `Harvested Date: ${crop.harvestedAt ? new Date(crop.harvestedAt.toDate()).toLocaleDateString() : 'N/A'}`,
+                            `Kg Gained: ${crop.kgGained || 'N/A'}`
+                        ];
+                        
+                        lines.forEach(line => {
+                            doc.text(line, 10, yPos);
+                            yPos += 7;
+                            if (yPos > 280) {
+                                doc.addPage();
+                                yPos = 20;
+                            }
+                        });
+                        
+                        yPos += 5; // Add some space between crops
+                    });
+                }
+
+                console.log("PDF generated successfully");
+                doc.save(`agritrade-${reportType.toLowerCase()}-report.pdf`);
+                console.log("PDF saved");
+
+            } catch (error) {
+                console.error("Error generating report:", error);
+                alert("An error occurred while generating the report. Please check the console for more details and try again.");
+            }
+        }
+
+        document.getElementById('generateReportBtn').addEventListener('click', () => {
+            const reportType = document.getElementById('reportType').value;
+            generateReport(reportType);
+        });
+    </script>
 </body>
 </html>

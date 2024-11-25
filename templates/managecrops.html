@@ -8,6 +8,50 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='manage_crops.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css">
+    <style>
+        /* Styles for the harvest modal */
+        .harvest-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .harvest-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            border-radius: 5px;
+        }
+        .harvest-modal-content h2 {
+            margin-top: 0;
+        }
+        .harvest-modal-content input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        .harvest-modal-content button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .harvest-modal-content button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -72,7 +116,8 @@
                         <thead>
                             <tr>
                                 <th>Crop Name</th>
-                                <th>Quantity (KGs)</th>
+                                <th>Planted (KGs)</th>
+                                <th>Harvested (KGs)</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -102,6 +147,16 @@
                             </div>
                             <button type="submit" class="submit-btn">Save Crop</button>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Harvest Modal -->
+                <div id="harvestModal" class="harvest-modal">
+                    <div class="harvest-modal-content">
+                        <h2>Harvest Crop</h2>
+                        <p>How many KGs of <span id="harvestCropName"></span> have you harvested?</p>
+                        <input type="number" id="harvestedAmount" min="0" step="0.01" required onkeydown="return event.keyCode !== 189">
+                        <button onclick="confirmHarvest()">Confirm Harvest</button>
                     </div>
                 </div>
             </main>
@@ -154,8 +209,7 @@
                     document.getElementById('user-info').textContent = "User";
                 }
                 
-                loadInventory();
-                loadsoldItems();
+                loadCrops(); // Load crops after user authentication
             } else {
                 console.error("No user is signed in.");
                 window.location.href = "/login";
@@ -182,7 +236,11 @@
             if (event.target == modal) {
                 modal.style.display = 'none';
             }
+            if (event.target == document.getElementById('harvestModal')) {
+                document.getElementById('harvestModal').style.display = 'none';
+            }
         }
+
         // Handle form submission
         document.getElementById('cropForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -223,30 +281,40 @@
         // Load crops
         async function loadCrops() {
             const cropTableBody = document.getElementById('cropTableBody');
-            cropTableBody.innerHTML = '';
+            cropTableBody.innerHTML = '<tr><td colspan="5">Loading crops...</td></tr>';
 
             try {
+                if (!currentUser) {
+                    throw new Error("User not authenticated");
+                }
+
                 const q = query(collection(db, "crops"), where("userId", "==", currentUser.uid));
                 const querySnapshot = await getDocs(q);
 
-                querySnapshot.forEach((doc) => {
-                    const crop = doc.data();
-                    const row = `
-                        <tr data-crop-id="${doc.id}">
-                            <td>${crop.name}</td>
-                            <td>${crop.quantity}</td>
-                            <td>${crop.status || 'Planted'}</td>
-                            <td>
-                                ${crop.status !== 'Harvested' ? `<button onclick="harvestCrop('${doc.id}')" class="action-btn harvest-btn">Harvest</button>` : `<span class="harvested-status">Harvested</span>`}
-                                <button onclick="deleteCrop('${doc.id}')" class="action-btn delete-btn">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                    cropTableBody.innerHTML += row;
-                });
+                if (querySnapshot.empty) {
+                    cropTableBody.innerHTML = '<tr><td colspan="5">No crops found. Add a new crop to get started!</td></tr>';
+                } else {
+                    cropTableBody.innerHTML = '';
+                    querySnapshot.forEach((doc) => {
+                        const crop = doc.data();
+                        const row = `
+                            <tr data-crop-id="${doc.id}">
+                                <td>${crop.name}</td>
+                                <td>${crop.quantity}</td>
+                                <td>${crop.harvestedQuantity || '-'}</td>
+                                <td>${crop.status || 'Planted'}</td>
+                                <td>
+                                    ${crop.status !== 'Harvested' ? `<button onclick="harvestCrop('${doc.id}')" class="action-btn harvest-btn">Harvest</button>` : `<span class="harvested-status">Harvested</span>`}
+                                    <button onclick="deleteCrop('${doc.id}')" class="action-btn delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                        cropTableBody.innerHTML += row;
+                    });
+                }
             } catch (error) {
                 console.error("Error loading crops:", error);
-                alert("An error occurred while loading crops.");
+                cropTableBody.innerHTML = '<tr><td colspan="5"></td></tr>';
             }
         }
 
@@ -266,6 +334,7 @@
                 console.log("No such document!");
             }
         }
+
         // Harvest crop
         window.harvestCrop = async function(id) {
             const docRef = doc(db, "crops", id);
@@ -273,39 +342,67 @@
             
             if (cropDoc.exists()) {
                 const cropData = cropDoc.data();
+                document.getElementById('harvestCropName').textContent = cropData.name;
+                document.getElementById('harvestedAmount').value = '';
+                document.getElementById('harvestModal').style.display = 'block';
+                
+                // Store the crop ID for use in confirmHarvest
+                window.currentHarvestCropId = id;
+            } else {
+                console.log("No such document!");
+                alert("Error: Crop not found");
+            }
+        }
+
+        // Confirm harvest
+        window.confirmHarvest = async function() {
+            const harvestedAmount = document.getElementById('harvestedAmount').value;
+            const id = window.currentHarvestCropId;
+
+            if (harvestedAmount !== '' && !isNaN(harvestedAmount) && parseFloat(harvestedAmount) >= 0) {
+                const kgHarvested =
+parseFloat(harvestedAmount);
+                const docRef = doc(db, "crops", id);
+                const cropDoc = await getDoc(docRef);
+                const cropData = cropDoc.data();
+                const kgGained = kgHarvested - cropData.quantity;
                 
                 // Add to inventory
                 await addDoc(collection(db, "inventory"), {
                     userId: currentUser.uid,
                     cropName: cropData.name,
-                    quantity: cropData.quantity,
+                    quantity: kgHarvested,
+                    kgGained: kgGained,
                     updatedAt: serverTimestamp(),
                 });
 
                 // Update crop status to 'Harvested'
                 await updateDoc(docRef, {
                     status: 'Harvested',
-                    harvestedAt: serverTimestamp()
+                    harvestedAt: serverTimestamp(),
+                    harvestedQuantity: kgHarvested,
+                    kgGained: kgGained
                 });
 
                 // Update the crop row to show the new status and confirmation message
                 const cropRow = document.querySelector(`tr[data-crop-id="${id}"]`);
                 if (cropRow) {
-                    cropRow.querySelector('td:nth-child(3)').textContent = 'Harvested';
-                    cropRow.querySelector('td:nth-child(4)').innerHTML = `
-                        <span class="confirmation-message">Added to inventory</span>
+                    cropRow.querySelector('td:nth-child(3)').textContent = kgHarvested;
+                    cropRow.querySelector('td:nth-child(4)').textContent = 'Harvested';
+                    cropRow.querySelector('td:nth-child(5)').innerHTML = `
+                        <span class="confirmation-message">Added to inventory (Gained: ${kgGained} KG)</span>
                     `;
                     
                     // Remove the confirmation message after 5 seconds
                     setTimeout(() => {
-                        cropRow.querySelector('td:nth-child(4)').innerHTML = '';
+                        cropRow.querySelector('td:nth-child(5)').innerHTML = '<span class="harvested-status">Harvested</span>';
                     }, 5000);
                 }
 
                 loadCrops(); // Refresh the crop list
+                document.getElementById('harvestModal').style.display = 'none';
             } else {
-                console.log("No such document!");
-                alert("Error: Crop not found");
+                alert("Invalid harvested amount. Please enter a valid, non-negative number.");
             }
         }
 
@@ -338,6 +435,17 @@
         sidebar.addEventListener('mouseleave', () => {
             if (!isSidebarMinimized) toggleSidebar();
         });
+
+        // Prevent negative input for harvested amount
+        document.getElementById('harvestedAmount').addEventListener('input', function(e) {
+            if (this.value < 0) {
+                this.value = 0;
+            }
+        });
+
+        // Initial load of crops
+        loadCrops();
     </script>
 </body>
 </html>
+
