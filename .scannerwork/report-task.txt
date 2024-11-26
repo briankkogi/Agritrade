@@ -1,0 +1,6 @@
+projectKey=agritrade
+serverUrl=http://localhost:9000
+serverVersion=10.7.0.96327
+dashboardUrl=http://localhost:9000/dashboard?id=agritrade
+ceTaskId=3961a44d-0a51-4972-8daf-a14293a73d9f
+ceTaskUrl=http://localhost:9000/api/ce/task?id=3961a44d-0a51-4972-8daf-a14293a73d9f

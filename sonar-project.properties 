@@ -1,0 +1,8 @@
+sonar-scanner \
+  -Dsonar.projectKey=agritrade \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.token=sqp_daf12a2a9b220341511b277c19ad8132e42daa7c
+
+
+  

@@ -8,6 +8,7 @@ import firebase_admin
 from firebase_admin import credentials, auth, firestore
 import time
 import json
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')  # Use a default for development
@@ -20,8 +21,14 @@ model = joblib.load('stacking_model.pkl')
 scaler = joblib.load('scaler.pkl')
 label_encoder = joblib.load('label_encoder.pkl')
 
-# OpenWeather API key
-API_KEY = '6ccecd2ea82b83adf48ae94faca5a556'
+# Explicitly load .env file
+load_dotenv(dotenv_path='.env')
+
+# Fetch the API key
+API_KEY = os.getenv('OPENWEATHER_API_KEY')
+
+if not API_KEY:
+    raise ValueError("API key not found. Set the OPENWEATHER_API_KEY environment variable.")
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate('credentials/agritrade-3fe65-firebase-adminsdk-zfqtb-8e8abb15f4.json')
