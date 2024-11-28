@@ -11,7 +11,7 @@ import json
 from dotenv import load_dotenv
 
 app = Flask(__name__)
-app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')  # Use a default for development
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')  
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)

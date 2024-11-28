@@ -20,20 +20,6 @@ body {
     display: flex;
     flex: 1;
 }
-
-/* Profile icon */
-.profile-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 20%;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.profile-icon:hover {
-    transform: scale(1.1);
-}
-
 /* Sidebar styles */
 .sidebar {
     width: 250px;

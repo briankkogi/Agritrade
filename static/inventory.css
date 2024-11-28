@@ -4,6 +4,15 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+/* Full body styling */
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+    background-color: #f9f9f9;
+}
+
+/* Inventory form */
 .inventory-form {
     background-color: white;
     padding: 20px;
@@ -12,21 +21,26 @@
     max-width: 500px;
     margin: 20px auto;
 }
+
 .form-group {
     margin-bottom: 20px;
 }
+
 .form-group label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
 }
-.form-group input, .form-group select {
+
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
 }
+
 .submit-btn {
     background-color: #4CAF50;
     color: white;
@@ -37,16 +51,13 @@
     font-size: 16px;
     width: 100%;
 }
+
 .submit-btn:hover {
     background-color: #45a049;
 }
-#inventoryList {
-    margin-top: 20px;
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+
+/* Inventory and sold items list */
+#inventoryList,
 #soldItemsList {
     margin-top: 20px;
     background-color: white;
@@ -54,19 +65,26 @@
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
+
+/* Table styling */
 table {
     width: 100%;
     border-collapse: collapse;
 }
-th, td {
+
+th,
+td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
+
 th {
     background-color: #f2f2f2;
     font-weight: bold;
 }
+
+/* Action buttons */
 .action-btn {
     background-color: #4CAF50;
     color: white;
@@ -76,20 +94,17 @@ th {
     cursor: pointer;
     margin-right: 5px;
 }
+
 .action-btn:hover {
     background-color: #45a049;
 }
+
 .delete-btn {
     background-color: #f44336;
 }
+
 .delete-btn:hover {
     background-color: #d32f2f;
-}
-/* Full body styling */
-body {
-    font-family: 'Open Sans', sans-serif;
-    color: #333;
-    background-color: #f9f9f9;
 }
 
 /* Main container to hold sidebar and content */
@@ -100,76 +115,76 @@ body {
 /* Sidebar styles */
 .sidebar {
     width: 250px;
-    background-color: #4CAF50; /* Changed to green */
-    height: calc(100vh - 80px); /* Full height minus the header height */
+    background-color: #4CAF50;
+    height: calc(100vh - 80px);
     position: fixed;
-    top: 80px; /* Position below the header */
+    top: 80px;
     left: 0;
     padding-top: 30px;
     display: flex;
-    flex-direction: column; /* Ensure sidebar items go top to bottom */
-    transition: width 0.3s ease; /* Smooth transition for width */
+    flex-direction: column;
+    transition: width 0.3s ease;
 }
 
 .sidebar.minimized {
-    width: 90px; /* Minimized width */
+    width: 90px;
 }
 
 .sidebar ul {
     list-style-type: none;
     padding: 0;
-    width: 90%; /* Make sure the sidebar items take the full width */
+    width: 90%;
     display: flex;
-    flex-direction: column; /* Stack items vertically */
+    flex-direction: column;
 }
 
 .sidebar ul li {
-    width: 100%; /* Ensure the list item takes full width */
+    width: 100%;
 }
 
 .sidebar ul li a {
     display: flex;
     align-items: center;
-    color: #f9f9f9; /* Keep the text color white */
-    padding: 20px; /* Increase padding for larger clickable area */
+    color: #f9f9f9;
+    padding: 20px;
     text-decoration: none;
     font-weight: 600;
     font-family: 'Montserrat', sans-serif;
-    font-size: 18px; /* Increased font size */
-    transition: background-color 0.3s ease, border 0.3s ease; /* Added transition for border */
-    width: 100%; /* Ensure anchor tags take full width */
+    font-size: 18px;
+    transition: background-color 0.3s ease, border 0.3s ease;
+    width: 100%;
 }
 
 /* Active and hover states */
 .sidebar ul li a:hover,
 .sidebar ul li a.active {
-    color: #000; /* Change text color on hover and active */
-    background-color: #f9f9f9; /* Set background color to white for active */
-    border-left: 5px solid #4CAF50; /* Add a left border with the sidebar color */
+    color: #000;
+    background-color: #f9f9f9;
+    border-left: 5px solid #4CAF50;
 }
 
 .sidebar ul li a .icon {
-    font-size: 24px; /* Increase icon size */
-    margin-right: 20px; /* Increase spacing between icon and text */
+    font-size: 24px;
+    margin-right: 20px;
 }
 
 /* Hide text in minimized sidebar */
 .sidebar.minimized ul li a .text {
-    display: none; /* Hide text when minimized */
+    display: none;
 }
 
 /* Main content area */
 .main-content {
-    margin-left: 250px; /* Same as sidebar width */
+    margin-left: 250px;
     padding: 40px;
-    margin-top: 80px; /* Add margin to position below the header */
-    width: calc(100% - 250px); /* Adjust width to account for sidebar */
-    transition: margin-left 0.3s ease; /* Smooth transition for main content */
+    margin-top: 80px;
+    width: calc(100% - 250px);
+    transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
 .sidebar.minimized + .main-content {
-    margin-left: 70px; /* Adjust margin for minimized sidebar */
-    width: calc(100% - 70px); /* Adjust width for minimized sidebar */
+    margin-left: 70px;
+    width: calc(100% - 70px);
 }
 
 /* Header section */
@@ -180,11 +195,11 @@ header {
     background-color: #ffffff;
     padding: 20px 40px;
     border-bottom: 1px solid #e0e0e0;
-    position: fixed; /* Make header fixed */
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000; /* Ensure header is above other content */
+    z-index: 1000;
 }
 
 .logo {
@@ -225,17 +240,17 @@ nav ul li a.active {
 }
 
 .dropdown-content {
-    display: none; /* Initially hide the dropdown */
+    display: none;
     position: absolute;
     right: 0;
     background-color: #ffffff;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
 
 .dropdown:hover .dropdown-content {
-    display: block; /* Show dropdown on hover */
+    display: block;
 }
 
 .dropdown-content a {
@@ -246,7 +261,7 @@ nav ul li a.active {
 }
 
 .dropdown-content a:hover {
-    background-color: #f1f1f1; /* Change background on hover */
+    background-color: #f1f1f1;
 }
 
 /* Overview cards */
@@ -266,7 +281,7 @@ nav ul li a.active {
 }
 
 .overview-card:last-child {
-    margin-right: 0; /* No margin on the last card */
+    margin-right: 0;
 }
 
 .overview-card h3 {
@@ -306,61 +321,24 @@ h2 {
     margin-bottom: 10px;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #ffffff;
-    padding: 20px 40px;
-    border-bottom: 1px solid #e0e0e0;
-    position: fixed; /* Make header fixed */
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000; /* Ensure header is above other content */
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-}
-
-.logo img {
-    height: 40px;
-    margin-right: 15px;
-}
-
-nav ul {
-    display: flex;
-    list-style-type: none;
-}
-
-nav ul li {
-    margin-left: 30px;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-    transition: color 0.3s;
-}
-
-nav ul li a:hover,
-nav ul li a.active {
-    color: #4CAF50;
-}
+/* Profile icon */
 .profile-icon {
     font-size: 32px;
     color: #4CAF50;
     vertical-align: middle;
+    transition: transform 0.3s ease;
 }
+
 .profile-icon:hover {
-    transform: scale(1.1); /* Slightly enlarge the icon on hover */
+    transform: scale(1.1);
 }
+
+/* User info hover */
 .user-info:hover {
     cursor: pointer;
 }
+
+/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -370,7 +348,7 @@ nav ul li a.active {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
@@ -394,5 +372,4 @@ nav ul li a.active {
 .close:focus {
     color: black;
     text-decoration: none;
-    cursor: pointer;
 }

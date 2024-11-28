@@ -173,6 +173,9 @@ nav ul li a.active {
     border-radius: 20%;
     cursor: pointer;
     transition: transform 0.3s ease;
+    font-size: 32px;
+    color: #4CAF50;
+    vertical-align: middle;
 }
 
 .profile-icon:hover {
@@ -285,7 +288,6 @@ th {
 .close:focus {
     color: #000;
     text-decoration: none;
-    cursor: pointer;
 }
 
 .form-group {
@@ -305,6 +307,7 @@ th {
     border-radius: 5px;
     font-size: 16px;
 }
+
 .confirmation-message {
     color: #155724;
     background-color: #d4edda;
@@ -313,6 +316,7 @@ th {
     border-radius: 4px;
     display: inline-block;
 }
+
 .harvested-status {
     color: #856404;
     background-color: #fff3cd;
@@ -321,14 +325,8 @@ th {
     border-radius: 4px;
     display: inline-block;
 }
-.profile-icon {
-    font-size: 32px;
-    color: #4CAF50;
-    vertical-align: middle;
-}
-.profile-icon:hover {
-    transform: scale(1.1); /* Slightly enlarge the icon on hover */
-}
+
+/* User info hover */
 .user-info:hover {
     cursor: pointer;
 }

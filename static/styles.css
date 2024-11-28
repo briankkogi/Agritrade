@@ -292,23 +292,33 @@ input[type="submit"].predict-button:hover {
     background-color: #45a049;
 }
 #weather-info {
-    position: relative;
-    padding-top: 40px; /* Adjust this value as needed */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#weather-info p {
+    margin: 10px 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: #333;
 }
 
 .weather-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 15px;
 }
 
-.weather-header h3 {
+.weather-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
     margin: 0;
 }
+
 
 .location-selector {
     margin-left: auto; /* Push to the right */
