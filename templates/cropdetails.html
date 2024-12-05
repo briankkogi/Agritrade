@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ crop_name }} Details - AgriTrade</title>
+    <title>{{ crop_name | capitalize }} Details - AgriTrade</title>
     <link rel="icon" href="{{ url_for('static', filename='AgriTrade Logo.jpeg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
@@ -78,6 +78,7 @@
             display: flex;
             justify-content: space-between;
             margin-top: 30px;
+            gap: 20px; /* Add spacing between buttons */
         }
         .action-buttons a {
             padding: 12px 24px;
@@ -89,25 +90,18 @@
             text-align: center;
             flex-basis: 48%;
         }
-        .add-to-crops {
+        .add-to-crops, .back-to-results { /* Make both buttons green */
             background-color: #27AE60;
         }
-        .add-to-crops:hover {
+        .add-to-crops:hover, .back-to-results:hover {
             background-color: #219A52;
-            transform: translateY(-3px);
-        }
-        .back-to-results {
-            background-color: #3498DB;
-        }
-        .back-to-results:hover {
-            background-color: #2980B9;
             transform: translateY(-3px);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>{{ crop_name }} Details</h1>
+        <h1>{{ crop_name | capitalize }} Details</h1>
         
         <div class="details-container">
             <h2>Why This Crop Was Recommended</h2>
@@ -155,7 +149,7 @@
         
         <div class="action-buttons">
             <!-- Add the crop name as a query parameter to crops.html -->
-            <a href="{{ url_for('crops') }}?crop_name={{ crop_name | urlencode }}" class="add-to-crops">Add to Crops</a>
+            <a href="{{ url_for('crops') }}?crop_name={{ crop_name | urlencode | capitalize }}" class="add-to-crops">Add to Crops</a>
             <a href="{{ url_for('home') }}" class="back-to-results">Back to Predictions</a>
         </div>
     </div>

@@ -27,6 +27,13 @@
         const db = getFirestore(app);
 
         document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('phone-number').addEventListener('input', function(event) {
+                const phoneNumber = event.target.value;
+                if (phoneNumber.length > 10) {
+                    event.target.value = phoneNumber.slice(0, 10);
+                }
+            });
+
             document.getElementById('signup-form').addEventListener('submit', function(event) {
                 event.preventDefault();
 
@@ -34,6 +41,11 @@
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 const phoneNumber = document.getElementById('phone-number').value;
+
+                if (!/^\d{10}$/.test(phoneNumber)) {
+                    document.getElementById('error-message').textContent = "Phone number must be exactly 10 digits.";
+                    return;
+                }
 
                 createUserWithEmailAndPassword(auth, email, password)
                     .then(async (userCredential) => {
@@ -89,7 +101,7 @@
 
                     <!-- New Phone Number field -->
                     <label for="phone-number">Phone Number:</label>
-                    <input type="text" id="phone-number" required>
+                    <input type="text" id="phone-number" required pattern="\d{10}" title="Phone number must be exactly 10 digits">
 
                     <button type="submit">Sign Up</button>
                 </form>

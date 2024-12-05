@@ -51,6 +51,42 @@
         .harvest-modal-content button:hover {
             background-color: #45a049;
         }
+        /* Styles for the delete modal */
+        .delete-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .delete-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            border-radius: 5px;
+        }
+        .delete-modal-content h2 {
+            margin-top: 0;
+        }
+        .delete-modal-content button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .delete-modal-content button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -159,6 +195,15 @@
                         <button onclick="confirmHarvest()">Confirm Harvest</button>
                     </div>
                 </div>
+
+                <!-- Delete Modal -->
+                <div id="deleteModal" class="delete-modal">
+                    <div class="delete-modal-content">
+                        <h2>Delete Crop</h2>
+                        <p>Are you sure you want to delete this crop?</p>
+                        <button onclick="confirmDelete()">Confirm Delete</button>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -238,6 +283,9 @@
             }
             if (event.target == document.getElementById('harvestModal')) {
                 document.getElementById('harvestModal').style.display = 'none';
+            }
+            if (event.target == document.getElementById('deleteModal')) {
+                document.getElementById('deleteModal').style.display = 'none';
             }
         }
 
@@ -407,11 +455,27 @@ parseFloat(harvestedAmount);
         }
 
         // Delete crop
-        window.deleteCrop = async function(id) {
-            if (confirm("Are you sure you want to delete this crop?")) {
+        window.deleteCrop = function(id) {
+            document.getElementById('deleteModal').style.display = 'block';
+            window.currentDeleteCropId = id;
+        }
+
+        window.confirmDelete = async function() {
+            const id = window.currentDeleteCropId;
+            try {
                 await deleteDoc(doc(db, "crops", id));
                 alert("Crop deleted successfully!");
                 loadCrops();
+                document.getElementById('deleteModal').style.display = 'none';
+            } catch (error) {
+                console.error("Error deleting crop: ", error);
+                alert("An error occurred while deleting the crop.");
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('deleteModal')) {
+                document.getElementById('deleteModal').style.display = 'none';
             }
         }
 

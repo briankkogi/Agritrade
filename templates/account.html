@@ -91,6 +91,40 @@
         .delete-btn:hover {
             background-color: #d32f2f;
         }
+        .container {
+            display: flex;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+        .sidebar.minimized + .main-content {
+            margin-left: 90px;
+        }
+        .user-details, .report-section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .logo span {
+            font-size: 1rem; /* Adjusted font size */
+            font-weight: normal; /* Adjusted font weight */
+            color: #333;
+        }
     </style>
     <script>
         console.log("jsPDF loaded:", typeof window.jspdf);
@@ -101,6 +135,34 @@
         window.onerror = function(message, source, lineno, colno, error) {
             console.error("Global error:", message, "at", source, ":", lineno, ":", colno, "Error object:", error);
         };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const phoneNumberInput = document.getElementById('phoneNumber');
+            phoneNumberInput.addEventListener('input', () => {
+                phoneNumberInput.value = phoneNumberInput.value.replace(/\D/g, '').slice(0, 10);
+            });
+
+            // Sidebar toggle functionality
+            const sidebar = document.getElementById('sidebar');
+            let isSidebarMinimized = false;
+
+            const toggleSidebar = () => {
+                if (isSidebarMinimized) {
+                    sidebar.classList.remove('minimized');
+                } else {
+                    sidebar.classList.add('minimized');
+                }
+                isSidebarMinimized = !isSidebarMinimized;
+            };
+
+            sidebar.addEventListener('mouseover', () => {
+                if (isSidebarMinimized) toggleSidebar();
+            });
+
+            sidebar.addEventListener('mouseleave', () => {
+                if (!isSidebarMinimized) toggleSidebar();
+            });
+        });
     </script>
 
     <div class="container">
@@ -181,16 +243,15 @@
                 </div>
                 <div class="form-group">
                     <label for="phoneNumber">Phone Number</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber" required>
+                    <input type="text" id="phoneNumber" name="phoneNumber" required maxlength="10">
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password">
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Update Profile">
+                    <input type="submit" value="Update Profile" class="submit-btn">
                 </div>
-                <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
             </form>
         </div>
     </div>
@@ -322,8 +383,8 @@
                 }
             });
         
-            // Hide modal when Cancel button is clicked
-            document.getElementById('cancelBtn').addEventListener('click', () => {
+            // Hide modal when close button (X) is clicked
+            document.getElementById('closeModalBtn').addEventListener('click', () => {
                 const modal = document.getElementById('editProfileModal');
                 modal.style.display = 'none';
             });
