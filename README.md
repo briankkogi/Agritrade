@@ -19,13 +19,7 @@ Before you begin, ensure you have met the following requirements:
     cd agritrade
     ```
 
-2. Install the necessary dependencies:
-
-    ```bash
-    npm install
-    ```
-
-3. Install Python dependencies:
+2. Install Python dependencies:
 
     ```bash
     pip install -r requirements.txt
@@ -40,12 +34,8 @@ Before you begin, ensure you have met the following requirements:
 ## Running the Application
 
 1. Start the development server:
-
-    ```bash
-    npm start
-    ```
-
-2. Open your browser and navigate to `http://localhost:3000`.
+   Python app.py 
+2. Open your browser and navigate to http://127.0.0.1:5000.
 
 ## Project Structure
 
